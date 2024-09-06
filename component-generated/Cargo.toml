@@ -3,8 +3,9 @@ name = "component-generated"
 version = "0.1.0"
 edition = "2021"
 description = "An example generated using the component template"
-authors = ["Josh McKinney <joshka@users.noreply.github.com>"]
+authors = ["randymcmillan <randymcmillan@protonmail.com>"]
 build = "build.rs"
+
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
