@@ -3,7 +3,7 @@ name = "component-generated"
 version = "0.1.0"
 edition = "2021"
 description = "An example generated using the component template"
-authors = ["Josh McKinney <joshka@users.noreply.github.com>"]
+authors = ["randymcmillan <randymcmillan@protonmail.com>"]
 build = "build.rs"
 
 
