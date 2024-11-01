@@ -1,184 +1,131 @@
-## Simple Async template
+# async-template
 
-This simple async template will create the following project structure:
+![async template demo](https://user-images.githubusercontent.com/1813121/277114001-0d25a09c-f24e-4ffc-8763-cd258828cec0.gif)
 
-```text
-src/
-├── app.rs     -> holds the state and application logic
-├── event.rs   -> handles the terminal events (key press, mouse click, resize, etc.)
-├── handler.rs -> handles the key press events and updates the application
-├── lib.rs     -> module definitions
-├── main.rs    -> entry-point
-├── tui.rs     -> initializes/exits the terminal interface
-└── ui.rs      -> renders the widgets / UI
+## Usage
+
+You can start by using `cargo-generate`:
+
+```shell
+cargo install cargo-generate
+cargo generate ratatui/templates component --name ratatui-hello-world
+cd ratatui-hello-world
 ```
 
-This is identical to the [simple] template but has `async` events out of the box with `tokio` and
-`crossterm`'s `EventStream`.
+## Features
 
-[simple](../simple/)
+- Uses [tokio](https://tokio.rs/) for async events
+  - Start and stop key events to shell out to another TUI like vim
+  - Supports suspend signal hooks
+- Logs using [tracing](https://github.com/tokio-rs/tracing)
+- [better-panic](https://github.com/mitsuhiko/better-panic)
+- [color-eyre](https://github.com/eyre-rs/color-eyre)
+- [human-panic](https://github.com/rust-cli/human-panic)
+- Clap for command line argument parsing
+- `Component` trait with
+  [`Home`](https://github.com/ratatui/async-template/blob/main/template/src/components/home.rs)
+  and
+  [`Fps`](https://github.com/ratatui/async-template/blob/main/template/src/components/fps.rs)
+  components as examples
 
-Here's a `diff` if you use as reference if want to convert your own code to `async`:
+## Advanced Usage
 
-**`./Cargo.toml`**
+You can also use a
+[`template.toml`](https://github.com/ratatui/async-template/blob/main/.github/workflows/template.toml)
+file to skip the prompts:
 
-```diff
---- ./simple/Cargo.toml	2023-12-15 11:45:40
-+++ ./simple-async/Cargo.toml	2024-01-14 05:33:25
-@@ -6,5 +6,8 @@
- edition = "2021"
-
- [dependencies]
--crossterm = "0.27.0"
--ratatui = "0.24.0"
-+crossterm = { version = "0.27.0", features = ["event-stream"] }
-+futures = "0.3.30"
-+ratatui = "0.25.0"
-+tokio = { version = "1.35.1", features = ["full"] }
+```bash
+$ cargo generate --git https://github.com/ratatui/async-template --template-values-file .github/workflows/template.toml --name ratatui-hello-world
+# OR generate from local clone
+$ cargo generate --path . --template-values-file .github/workflows/template.toml --name ratatui-hello-world
 ```
 
-**`./src/event.rs`**
+## Running your App
 
-```diff
---- ./simple/src/event.rs	2024-01-06 22:25:37
-+++ ./simple-async/src/event.rs	2024-01-14 05:42:04
-@@ -1,8 +1,10 @@
-+use std::time::Duration;
-+
-+use crossterm::event::{Event as CrosstermEvent, KeyEvent, MouseEvent};
-+use futures::{FutureExt, StreamExt};
-+use tokio::sync::mpsc;
-+
- use crate::app::AppResult;
--use crossterm::event::{self, Event as CrosstermEvent, KeyEvent, MouseEvent};
--use std::sync::mpsc;
--use std::thread;
--use std::time::{Duration, Instant};
-
- /// Terminal events.
- #[derive(Clone, Copy, Debug)]
-@@ -22,46 +24,53 @@
- #[derive(Debug)]
- pub struct EventHandler {
-     /// Event sender channel.
--    sender: mpsc::Sender<Event>,
-+    sender: mpsc::UnboundedSender<Event>,
-     /// Event receiver channel.
--    receiver: mpsc::Receiver<Event>,
-+    receiver: mpsc::UnboundedReceiver<Event>,
-     /// Event handler thread.
--    handler: thread::JoinHandle<()>,
-+    handler: tokio::task::JoinHandle<()>,
- }
-
- impl EventHandler {
-     /// Constructs a new instance of [`EventHandler`].
-     pub fn new(tick_rate: u64) -> Self {
-         let tick_rate = Duration::from_millis(tick_rate);
--        let (sender, receiver) = mpsc::channel();
--        let handler = {
--            let sender = sender.clone();
--            thread::spawn(move || {
--                let mut last_tick = Instant::now();
-+        let (sender, receiver) = mpsc::unbounded_channel();
-+        let _sender = sender.clone();
-+        let handler = tokio::spawn(async move {
-+            let mut reader = crossterm::event::EventStream::new();
-+            let mut tick = tokio::time::interval(tick_rate);
-                 loop {
--                    let timeout = tick_rate
--                        .checked_sub(last_tick.elapsed())
--                        .unwrap_or(tick_rate);
--
--                    if event::poll(timeout).expect("failed to poll new events") {
--                        match event::read().expect("unable to read event") {
--                            CrosstermEvent::Key(e) => sender.send(Event::Key(e)),
--                            CrosstermEvent::Mouse(e) => sender.send(Event::Mouse(e)),
--                            CrosstermEvent::Resize(w, h) => sender.send(Event::Resize(w, h)),
--                            CrosstermEvent::FocusGained => Ok(()),
--                            CrosstermEvent::FocusLost => Ok(()),
--                            CrosstermEvent::Paste(_) => unimplemented!(),
-+                let tick_delay = tick.tick();
-+                let crossterm_event = reader.next().fuse();
-+                tokio::select! {
-+                  _ = tick_delay => {
-+                    _sender.send(Event::Tick).unwrap();
-                         }
--                        .expect("failed to send terminal event")
-+                  Some(Ok(evt)) = crossterm_event => {
-+                    match evt {
-+                      CrosstermEvent::Key(key) => {
-+                        if key.kind == crossterm::event::KeyEventKind::Press {
-+                          _sender.send(Event::Key(key)).unwrap();
-                     }
--
--                    if last_tick.elapsed() >= tick_rate {
--                        sender.send(Event::Tick).expect("failed to send tick event");
--                        last_tick = Instant::now();
-+                      },
-+                      CrosstermEvent::Mouse(mouse) => {
-+                        _sender.send(Event::Mouse(mouse)).unwrap();
-+                      },
-+                      CrosstermEvent::Resize(x, y) => {
-+                        _sender.send(Event::Resize(x, y)).unwrap();
-+                      },
-+                      CrosstermEvent::FocusLost => {
-+                      },
-+                      CrosstermEvent::FocusGained => {
-+                      },
-+                      CrosstermEvent::Paste(_) => {
-+                      },
-                     }
-                 }
--            })
-                 };
-+            }
-+        });
-         Self {
-             sender,
-             receiver,
-@@ -73,7 +82,13 @@
-     ///
-     /// This function will always block the current thread if
-     /// there is no data available and it's possible for more data to be sent.
--    pub fn next(&self) -> AppResult<Event> {
--        Ok(self.receiver.recv()?)
-+    pub async fn next(&mut self) -> AppResult<Event> {
-+        self.receiver
-+            .recv()
-+            .await
-+            .ok_or(Box::new(std::io::Error::new(
-+                std::io::ErrorKind::Other,
-+                "This is an IO error",
-+            )))
-     }
- }
+```bash
+cargo run # Press `q` to exit
 ```
 
-**`./src/main.rs`**
+## Show help
 
-```diff
-diff -bur ./simple/src/main.rs ./simple-async/src/main.rs
---- ./simple/src/main.rs	2023-12-15 11:45:41
-+++ ./simple-async/src/main.rs	2024-01-14 05:36:37
-@@ -6,7 +6,8 @@
- use ratatui::backend::CrosstermBackend;
- use ratatui::Terminal;
+```bash
+$ cargo run -- --help
+Hello World project using ratatui-template
 
--fn main() -> AppResult<()> {
-+#[tokio::main]
-+async fn main() -> AppResult<()> {
-     // Create an application.
-     let mut app = App::new();
+Usage: ratatui-hello-world [OPTIONS]
 
-@@ -22,7 +23,7 @@
-         // Render the user interface.
-         tui.draw(&mut app)?;
-         // Handle events.
--        match tui.events.next()? {
-+        match tui.events.next().await? {
-             Event::Tick => app.tick(),
-             Event::Key(key_event) => handle_key_events(key_event, &mut app)?,
-             Event::Mouse(_) => {}
-
+Options:
+  -t, --tick-rate <FLOAT>   Tick rate, i.e. number of ticks per second [default: 1]
+  -f, --frame-rate <FLOAT>  Frame rate, i.e. number of frames per second [default: 60]
+  -h, --help                Print help
+  -V, --version             Print version
 ```
+
+## Show `version`
+
+Without direnv variables:
+
+```bash
+$ cargo run -- --version
+    Finished dev [unoptimized + debuginfo] target(s) in 0.07s
+     Running `target/debug/ratatui-hello-world --version`
+ratatui-hello-world v0.1.0-47-eb0a31a
+
+Authors: Dheepak Krishnamurthy
+
+Config directory: /Users/kd/Library/Application Support/com.kdheepak.ratatui-hello-world
+Data directory: /Users/kd/Library/Application Support/com.kdheepak.ratatui-hello-world
+```
+
+With direnv variables:
+
+```bash
+$ direnv allow
+direnv: loading ~/gitrepos/async-template/ratatui-hello-world/.envrc
+direnv: export +RATATUI_HELLO_WORLD_CONFIG +RATATUI_HELLO_WORLD_DATA +RATATUI_HELLO_WORLD_LOG_LEVEL
+
+$ # OR
+
+$ export RATATUI_HELLO_WORLD_CONFIG=`pwd`/.config
+$ export RATATUI_HELLO_WORLD_DATA=`pwd`/.data
+$ export RATATUI_HELLO_WORLD_LOG_LEVEL=debug
+
+$ cargo run -- --version
+    Finished dev [unoptimized + debuginfo] target(s) in 0.07s
+     Running `target/debug/ratatui-hello-world --version`
+ratatui-hello-world v0.1.0-47-eb0a31a
+
+Authors: Dheepak Krishnamurthy
+
+Config directory: /Users/kd/gitrepos/async-template/ratatui-hello-world/.config
+Data directory: /Users/kd/gitrepos/async-template/ratatui-hello-world/.data
+```
+
+## Documentation
+
+Read documentation on design decisions in the template here:
+<https://ratatui.github.io/async-template/>
+
+## Counter + Text Input Demo
+
+This repo contains a `ratatui-counter` folder that is a working demo as an example. If you wish to
+run a demo without using `cargo generate`, you can run the counter + text input demo by following
+the instructions below:
+
+```bash
+git clone https://github.com/ratatui/async-template
+cd async-template
+cd ratatui-counter # counter + text input demo
+
+export RATATUI_COUNTER_CONFIG=`pwd`/.config
+export RATATUI_COUNTER_DATA=`pwd`/.data
+export RATATUI_COUNTER_LOG_LEVEL=debug
+# OR
+direnv allow
+
+cargo run
+```
+
+You should see a demo like this:
+
+![counter demo](https://github.com/ratatui/async-template/assets/1813121/057a0fe9-9f6d-4f8c-963c-ca2725721bdd)
