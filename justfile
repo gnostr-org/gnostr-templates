@@ -23,7 +23,7 @@ gnostr-component:
 
 generate-wasm-pack:
     rm -rv wasm-pack-generated
-    cargo generate --path ./wasm-pack \
+    cargo generate --git https://github.com/rustwasm/wasm-pack-template.git \
         --name wasm-pack-generated \
         --define project-description="An example generated using the wasm-pack template" \
         --define use-gitserver=false
