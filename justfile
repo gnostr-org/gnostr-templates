@@ -1,6 +1,11 @@
 default:
     @just --list
 
+build-all:generate-all
+    cargo b
+build-release-all:generate-all
+    cargo b -r
+
 generate-all:
     just gnostr-component
     just generate-component
