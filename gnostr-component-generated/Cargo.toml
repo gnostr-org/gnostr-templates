@@ -1,8 +1,8 @@
 [package]
-name = "component-generated"
+name = "gnostr-component-generated"
 version = "0.1.0"
 edition = "2021"
-description = "An example generated using the component template"
+description = "An example generated using the gnostr component template"
 authors = ["randymcmillan <randymcmillan@protonmail.com>"]
 build = "build.rs"
 
