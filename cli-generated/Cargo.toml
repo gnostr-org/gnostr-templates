@@ -1,6 +1,6 @@
 [package]
 name = "cli-generated"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "An example generated using the component template"
 authors = ["randymcmillan <randymcmillan@protonmail.com>"]
