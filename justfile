@@ -7,7 +7,7 @@ build-release-all:
     cargo b -r
 
 generate-all:
-    git stash
+    git stash #--include-untracked -a
     just gnostr-component
     just generate-component
     #just generate-wasm-pack
