@@ -1,8 +1,8 @@
+use crate::app::App;
+use crate::cli::Commands;
 use clap::{Parser, Subcommand};
 use cli::Cli;
-use crate::cli::Commands;
 use color_eyre::Result;
-use crate::app::App;
 
 mod action;
 mod app;
@@ -64,16 +64,14 @@ fn main() {
     //    None => tui().expect("REASON"),
     //}
 
-let cli = Cli::parse();
-match &cli.command {
-Some(Commands::Add{ name}) => {
-println!("{:?}", name);
-}
-None => {
-
-println!("Default:None");
-let _ = tui();
-}
-}
-
+    let cli = Cli::parse();
+    match &cli.command {
+        Some(Commands::Add { name }) => {
+            println!("{:?}", name);
+        }
+        None => {
+            println!("Default:None");
+            let _ = tui();
+        }
+    }
 }
