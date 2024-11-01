@@ -1,6 +1,6 @@
 use crate::app::App;
 use crate::cli::Commands;
-use clap::{Parser, Subcommand};
+use clap::Parser;
 use cli::Cli;
 use color_eyre::Result;
 
@@ -67,7 +67,8 @@ fn main() {
     let cli = Cli::parse();
     match &cli.command {
         Some(Commands::Add { name }) => {
-            println!("{:?}", name);
+            println!("{:}", name.as_ref().unwrap_or(&String::from("")));
+            print!("{:}", name.clone().unwrap_or(String::from("")));
         }
         None => {
             println!("Default:None");
