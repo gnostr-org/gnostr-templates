@@ -1,4 +1,3 @@
-[workspace]
 [package]
 name = "{{project-name | kebab_case}}"
 version = "0.1.0"
