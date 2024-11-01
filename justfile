@@ -12,7 +12,7 @@ generate-all:
     just generate-wasm-pack
     just generate-simple
     just generate-simple-async
-    just generate-bin
+    just generate-cli
     just generate-lib
 
 gnostr-component:
@@ -49,10 +49,10 @@ generate-simple-async:
     cargo generate --path ./simple-async --name simple-async-generated
     touch simple-async-generated/.gitkeep
 
-generate-bin:
-    rm -rv bin-generated
-    cargo generate --path ./bin --name bin-generated
-    touch bin-generated/.gitkeep
+generate-cli:
+    rm -rv cli-generated
+    cargo generate --path ./cli --name cli-generated
+    touch cli-generated/.gitkeep
 
 generate-lib:
     rm -rv lib-generated
