@@ -1,9 +1,9 @@
 default:
     @just --list
 
-build-all:generate-all
+build-all:
     cargo b
-build-release-all:generate-all
+build-release-all:
     cargo b -r
 
 generate-all:
