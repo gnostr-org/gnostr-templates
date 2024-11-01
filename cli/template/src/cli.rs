@@ -1,15 +1,13 @@
+use crate::config::{get_config_dir, get_data_dir};
 use clap::Parser;
 use clap::Subcommand;
-use crate::config::{get_config_dir, get_data_dir};
 
-
-//#[derive(Subcommand)]                             
+//#[derive(Subcommand)]
 #[derive(Subcommand, Debug)]
-pub enum Commands {                                   
+pub enum Commands {
     /// Adds files to myapp                       
-    Add { name: Option<String> },                 
-} 
-
+    Add { name: Option<String> },
+}
 
 #[derive(Parser, Debug)]
 #[command(author, version = version(), about, long_about = None, propagate_version = true)]
@@ -22,9 +20,8 @@ pub struct Cli {
     #[arg(short, long, value_name = "FLOAT", default_value_t = 60.0)]
     pub frame_rate: f64,
 
-    #[command(subcommand)]                        
-    pub command: Option<Commands>, 
-
+    #[command(subcommand)]
+    pub command: Option<Commands>,
 }
 
 const VERSION_MESSAGE: &str = concat!(
