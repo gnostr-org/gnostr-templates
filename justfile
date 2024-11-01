@@ -14,6 +14,7 @@ generate-all:
     just generate-simple-async
     just generate-cli
     just generate-lib
+    just generate-user-input
 
 gnostr-component:
     mkdir -p gnostr-component-generated
@@ -69,3 +70,9 @@ generate-lib:
         --define project-description="An example generated using the component template" \
         --define use-gitserver=false
     touch lib-generated/.gitkeep
+
+generate-user-input:
+    mkdir -p user-input-generated
+    rm -rv user-input-generated
+    cargo generate --path ./user-input --name user-input-generated
+    touch user-input-generated/.gitkeep
