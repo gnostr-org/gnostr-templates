@@ -24,15 +24,6 @@ gnostr-component:
         --define use-gitserver=false
     touch gnostr-component-generated/.gitkeep
 
-generate-wasm-pack:
-    mkdir -p wasm-pack-generated
-    rm -rv wasm-pack-generated
-    cargo generate --git https://github.com/rustwasm/wasm-pack-template.git \
-        --name wasm-pack-generated \
-        --define project-description="An example generated using the wasm-pack template" \
-        --define use-gitserver=false
-    touch wasm-pack-generated/.gitkeep
-
 generate-component:
     mkdir -p component-generated
     rm -rv component-generated
@@ -41,6 +32,15 @@ generate-component:
         --define project-description="An example generated using the component template" \
         --define use-gitserver=false
     touch component-generated/.gitkeep
+
+generate-wasm-pack:
+    mkdir -p wasm-pack-generated
+    rm -rv wasm-pack-generated
+    cargo generate --git https://github.com/rustwasm/wasm-pack-template.git \
+        --name wasm-pack-generated \
+        --define project-description="An example generated using the wasm-pack template" \
+        --define use-gitserver=false
+    touch wasm-pack-generated/.gitkeep
 
 generate-simple:
     mkdir -p simple-generated
@@ -69,4 +69,3 @@ generate-lib:
         --define project-description="An example generated using the component template" \
         --define use-gitserver=false
     touch lib-generated/.gitkeep
-
