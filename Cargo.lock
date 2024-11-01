@@ -306,10 +306,32 @@ checksum = "1462739cb27611015575c0c11df5df7601141071f07518d56fcc1be504cbec97"
 name = "cli-generated"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "better-panic",
+ "clap",
+ "color-eyre",
+ "config",
  "crossterm",
+ "derive_deref",
+ "directories",
  "futures",
+ "human-panic",
+ "json5",
+ "lazy_static",
+ "libc",
+ "pretty_assertions",
  "ratatui",
+ "serde",
+ "serde_json",
+ "signal-hook",
+ "strip-ansi-escapes",
+ "strum",
  "tokio",
+ "tokio-util",
+ "tracing",
+ "tracing-error",
+ "tracing-subscriber",
+ "vergen-gix",
 ]
 
 [[package]]
@@ -1574,10 +1596,32 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 name = "lib-generated"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "better-panic",
+ "clap",
+ "color-eyre",
+ "config",
  "crossterm",
+ "derive_deref",
+ "directories",
  "futures",
+ "human-panic",
+ "json5",
+ "lazy_static",
+ "libc",
+ "pretty_assertions",
  "ratatui",
+ "serde",
+ "serde_json",
+ "signal-hook",
+ "strip-ansi-escapes",
+ "strum",
  "tokio",
+ "tokio-util",
+ "tracing",
+ "tracing-error",
+ "tracing-subscriber",
+ "vergen-gix",
 ]
 
 [[package]]
