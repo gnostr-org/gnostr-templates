@@ -64,7 +64,7 @@ fn main() {
     //    None => tui().expect("REASON"),
     //}
 
-let mut cli = Cli::parse();
+let cli = Cli::parse();
 match &cli.command {
 Some(Commands::Add{ name}) => {
 println!("{:?}", name);
@@ -72,6 +72,7 @@ println!("{:?}", name);
 None => {
 
 println!("Default:None");
+let _ = tui();
 }
 }
 
