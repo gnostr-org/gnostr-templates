@@ -12,6 +12,8 @@ generate-all:
     just generate-wasm-pack
     just generate-simple
     just generate-simple-async
+    just generate-bin
+    just generate-lib
 
 gnostr-component:
     rm -rv gnostr-component-generated
@@ -46,3 +48,14 @@ generate-simple-async:
     rm -rv simple-async-generated
     cargo generate --path ./simple-async --name simple-async-generated
     touch simple-async-generated/.gitkeep
+
+generate-bin:
+    rm -rv bin-generated
+    cargo generate --path ./bin --name bin-generated
+    touch bin-generated/.gitkeep
+
+generate-lib:
+    rm -rv lib-generated
+    cargo generate --path ./lib --name lib-generated
+    touch lib-generated/.gitkeep
+
