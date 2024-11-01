@@ -303,6 +303,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1462739cb27611015575c0c11df5df7601141071f07518d56fcc1be504cbec97"
 
 [[package]]
+name = "cli-generated"
+version = "0.1.0"
+dependencies = [
+ "crossterm",
+ "futures",
+ "ratatui",
+ "tokio",
+]
+
+[[package]]
 name = "clru"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1559,6 +1569,16 @@ name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
+
+[[package]]
+name = "lib-generated"
+version = "0.1.0"
+dependencies = [
+ "crossterm",
+ "futures",
+ "ratatui",
+ "tokio",
+]
 
 [[package]]
 name = "libc"
