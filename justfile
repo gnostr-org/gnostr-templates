@@ -9,7 +9,7 @@ build-release-all:
 generate-all:
     just gnostr-component
     just generate-component
-    just generate-wasm-pack
+    #just generate-wasm-pack
     just generate-simple
     just generate-simple-async
     just generate-cli
