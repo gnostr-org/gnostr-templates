@@ -7,6 +7,7 @@ build-release-all:
     cargo b -r
 
 generate-all:
+    git stash
     just gnostr-component
     just generate-component
     #just generate-wasm-pack
@@ -15,6 +16,7 @@ generate-all:
     just generate-cli
     just generate-lib
     just generate-user-input
+    git stash pop
 
 gnostr-component:
     mkdir -p gnostr-component-generated
