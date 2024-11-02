@@ -16,6 +16,7 @@ generate-all:
     just generate-cli
     just generate-lib
     just generate-user-input
+    just generate-dumbpipe
     #git stash pop
 
 gnostr-component:
@@ -78,3 +79,9 @@ generate-user-input:
     rm -rv user-input-generated
     cargo generate --path ./user-input --name user-input-generated
     touch user-input-generated/.gitkeep
+
+generate-dumbpipe:
+    mkdir -p dumbpipe-generated
+    rm -rv dumbpipe-generated
+    cargo generate --path ./dumbpipe --name dumbpipe-generated
+    touch dumbpipe-generated/.gitkeep
