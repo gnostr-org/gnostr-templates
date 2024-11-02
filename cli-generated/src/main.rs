@@ -13,6 +13,7 @@ mod errors;
 mod logging;
 mod tui;
 
+use gnostr_lib::install;
 use gnostr_lib::run;
 
 #[tokio::main]
@@ -69,6 +70,13 @@ fn main() {
         Some(Commands::Add { name }) => {
             println!("{:}", name.as_ref().unwrap_or(&String::from("")));
             print!("{:}", name.clone().unwrap_or(String::from("")));
+        }
+        Some(Commands::Install { name }) => {
+            if let Some(..) = name {
+                gnostr_lib::run("install", name.as_ref().expect(""));
+            } else {
+                gnostr_lib::run("install", "help");
+            }
         }
         None => {
             println!("Default:None");

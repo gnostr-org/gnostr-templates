@@ -1,5 +1,5 @@
-pub(crate) fn install() {
-    println!("install stuff");
+pub(crate) fn install(name: &str, command: &str) {
+    println!("{} {}", name, command);
 
     //    untyped_example();
     //    typed_example();

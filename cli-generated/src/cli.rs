@@ -6,7 +6,12 @@ use clap::Subcommand;
 #[derive(Subcommand, Debug)]
 pub enum Commands {
     /// Adds files to myapp                       
-    Add { name: Option<String> },
+    Add {
+        name: Option<String>,
+    },
+    Install {
+        name: Option<String>,
+    },
 }
 
 #[derive(Parser, Debug)]
