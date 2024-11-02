@@ -70,7 +70,7 @@ pub fn add(a: i32, b: i32) -> i32 {
 /// print!("gnostr_guess={:?}", gnostr_guess);
 /// ```
 
-pub fn run(name: &str) {
+pub fn run(name: &str, command: &str) {
     match name {
         "guess" => guess(),
         "variables" => variables(),
@@ -96,7 +96,7 @@ pub fn run(name: &str) {
         "notification" => notification(),
         "rest" => rest(),
         "lists" => ring_buffer::ring_buffer(),
-        "install" => install(),
+        "install" => install(name, command),
         _ => panic!("Invalid option"),
     };
 }
