@@ -1,7 +1,5 @@
-mod lib;
 mod app;
-use crate::app::App;
-use {{project-name | snake_case}}::*;
+use crate::app::*;
 use clap::{Parser, Subcommand};
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
