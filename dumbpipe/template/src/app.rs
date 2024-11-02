@@ -36,6 +36,7 @@ use ratatui::{
     widgets::{Block, List, ListItem, Paragraph},
     DefaultTerminal, Frame,
 };
+use {{project-name | snake_case}}::NodeTicket;
 
 /// App holds the state of the application
 pub struct App {
