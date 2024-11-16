@@ -1,2 +1,12 @@
-!**-generated/.gitkeep
 /target
+
+cli/
+component/
+dumbpipe/
+gnostr-component/
+lib-term/
+lib/
+simple-async/
+simple/
+user-input/
+wasm-pack/

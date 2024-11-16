@@ -1,87 +1,96 @@
 default:
     @just --list
 
-build-all:
+build-all: generate-all
     cargo b
-build-release-all:
+build-all-release: generate-all
     cargo b -r
+install-all:
+    cargo install --path cli-generated
 
 generate-all:
     #git stash #--include-untracked -a
+    just generate-cli
     just gnostr-component
     just generate-component
-    #just generate-wasm-pack
+    just generate-wasm-pack
     just generate-simple
+    just generate-lib-term
     just generate-simple-async
-    just generate-cli
     just generate-lib
     just generate-user-input
     just generate-dumbpipe
     #git stash pop
 
 gnostr-component:
-    mkdir -p gnostr-component-generated
-    rm -rv gnostr-component-generated
-    cargo generate --path ./gnostr-component \
-        --name gnostr-component-generated \
+    mkdir -p gnostr-component
+    rm -rv gnostr-component
+    cargo generate --path ./gnostr-component-template \
+        --name gnostr-component \
         --define project-description="An example generated using the gnostr component template" \
         --define use-gitserver=false
-    touch gnostr-component-generated/.gitkeep
+    touch gnostr-component/.gitkeep
 
 generate-component:
-    mkdir -p component-generated
-    rm -rv component-generated
-    cargo generate --path ./component \
-        --name component-generated \
+    mkdir -p component
+    rm -rv component
+    cargo generate --path ./component-template \
+        --name component \
         --define project-description="An example generated using the component template" \
         --define use-gitserver=false
-    touch component-generated/.gitkeep
+    touch component/.gitkeep
 
 generate-wasm-pack:
-    mkdir -p wasm-pack-generated
-    rm -rv wasm-pack-generated
+    mkdir -p wasm-pack
+    rm -rv wasm-pack
     cargo generate --git https://github.com/rustwasm/wasm-pack-template.git \
-        --name wasm-pack-generated \
+        --name wasm-pack \
         --define project-description="An example generated using the wasm-pack template" \
         --define use-gitserver=false
-    touch wasm-pack-generated/.gitkeep
+    touch wasm-pack/.gitkeep
+
+generate-lib-term:
+    mkdir -p lib-term
+    rm -rv lib-term
+    cargo generate --path ./lib-term-template --name lib-term
+    touch lib-term/.gitkeep
 
 generate-simple:
-    mkdir -p simple-generated
-    rm -rv simple-generated
-    cargo generate --path ./simple --name simple-generated
-    touch simple-generated/.gitkeep
+    mkdir -p simple
+    rm -rv simple
+    cargo generate --path ./simple-template --name simple
+    touch simple/.gitkeep
 
 generate-simple-async:
-    mkdir -p simple-async-generated
-    rm -rv simple-async-generated
-    cargo generate --path ./simple-async --name simple-async-generated
-    touch simple-async-generated/.gitkeep
+    mkdir -p simple-async
+    rm -rv simple-async
+    cargo generate --path ./simple-async-template --name simple-async
+    touch simple-async/.gitkeep
 
 generate-cli:
-    mkdir -p cli-generated
-    rm -rv cli-generated
-    cargo generate --path ./cli --name cli-generated \
+    mkdir -p cli
+    rm -rv cli
+    cargo generate --path ./cli-template --name cli \
         --define project-description="An example generated using the component template" \
         --define use-gitserver=false
-    touch cli-generated/.gitkeep
+    touch cli/.gitkeep
 
 generate-lib:
-    mkdir -p lib-generated
-    rm -rv lib-generated
-    cargo generate --path ./lib --name lib-generated \
+    mkdir -p lib
+    rm -rv lib
+    cargo generate --path ./lib-template --name lib \
         --define project-description="An example generated using the component template" \
         --define use-gitserver=false
-    touch lib-generated/.gitkeep
+    touch lib/.gitkeep
 
 generate-user-input:
-    mkdir -p user-input-generated
-    rm -rv user-input-generated
-    cargo generate --path ./user-input --name user-input-generated
-    touch user-input-generated/.gitkeep
+    mkdir -p user-input
+    rm -rv user-input
+    cargo generate --path ./user-input-template --name user-input
+    touch user-input/.gitkeep
 
 generate-dumbpipe:
-    mkdir -p dumbpipe-generated
-    rm -rv dumbpipe-generated
-    cargo generate --path ./dumbpipe --name dumbpipe-generated
-    touch dumbpipe-generated/.gitkeep
+    mkdir -p dumbpipe
+    rm -rv dumbpipe
+    cargo generate --path ./dumbpipe-template --name dumbpipe
+    touch dumbpipe/.gitkeep
