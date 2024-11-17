@@ -1,4 +1,4 @@
-[workspace]
+#[workspace]
 [package]
 name = "{{project-name | snake_case}}"
 version = "0.1.0"
