@@ -3,7 +3,7 @@ use std::process::Command;
 extern crate {{project-name | snake_case}};
 use {{project-name | snake_case}}::*;
 
-use messages::*;
+use crate::messages::*;
 
 pub struct App();
 
