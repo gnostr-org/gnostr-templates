@@ -3407,35 +3407,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "lib_term"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "chan",
- "chrono",
- "clap",
- "color-eyre",
- "crossterm",
- "duct",
- "hex",
- "iroh-net",
- "iroh-quinn",
- "nix 0.29.0",
- "rand 0.5.6",
- "rand 0.8.5",
- "ratatui",
- "serde",
- "serde_derive",
- "serde_json",
- "termion",
- "tokio 1.40.0",
- "tokio-util",
- "tracing",
- "tracing-subscriber",
- "tui",
-]
-
-[[package]]
 name = "libc"
 version = "0.2.161"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6052,6 +6023,35 @@ dependencies = [
  "once_cell",
  "rustix",
  "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "term"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chan",
+ "chrono",
+ "clap",
+ "color-eyre",
+ "crossterm",
+ "duct",
+ "hex",
+ "iroh-net",
+ "iroh-quinn",
+ "nix 0.29.0",
+ "rand 0.5.6",
+ "rand 0.8.5",
+ "ratatui",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "termion",
+ "tokio 1.40.0",
+ "tokio-util",
+ "tracing",
+ "tracing-subscriber",
+ "tui",
 ]
 
 [[package]]

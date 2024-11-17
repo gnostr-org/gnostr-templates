@@ -8,7 +8,7 @@ build-all-release: generate-all
 install-all:
     cargo install --force --path cli
     cargo install --force --path component
-    cargo install --force --path lib-term
+    cargo install --force --path term
     cargo install --force --path simple
     cargo install --force --path user-input
     cargo install --force --path lib
@@ -20,7 +20,7 @@ generate-all:
     just generate-component
     just generate-wasm-pack
     just generate-simple
-    just generate-lib-term
+    just generate-term
     just generate-simple-async
     just generate-lib
     just generate-user-input
@@ -54,11 +54,11 @@ generate-wasm-pack:
         --define use-gitserver=false
     touch wasm-pack/.gitkeep
 
-generate-lib-term:
-    mkdir -p lib-term
-    rm -rv lib-term
-    cargo generate --path ./lib-term-template --name lib-term
-    touch lib-term/.gitkeep
+generate-term:
+    mkdir -p term
+    rm -rv term
+    cargo generate --path ./term-template --name term
+    touch term/.gitkeep
 
 generate-simple:
     mkdir -p simple
