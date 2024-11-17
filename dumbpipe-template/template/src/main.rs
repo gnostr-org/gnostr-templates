@@ -6,13 +6,13 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
 
 
-    color_eyre::install().expect("REASON");
-    let terminal = ratatui::init();
+    //color_eyre::install().expect("REASON");
+    //let terminal = ratatui::init();
 
     //let app_result = {{project-name | snake_case}}::app::App::new().run(terminal);
-    let app_result = App::new().run(terminal);
+    //let app_result = App::new().run(terminal);
     //let app_result = iroh_net::endpoint::Source().run(terminal);
-    ratatui::restore();
+    //ratatui::restore();
     //app_result
 
     //let args = Args::parse();
