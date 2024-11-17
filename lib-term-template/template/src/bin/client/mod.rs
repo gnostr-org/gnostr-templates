@@ -4,8 +4,8 @@ extern crate chrono;
 use chrono::prelude::*;
 const TIME_FORMAT: &'static str = "%H:%M:%S";
 
-extern crate lib_term;
-use lib_term::*;
+extern crate {{project-name | snake_case}};
+use {{project-name | snake_case}}::*;
 
 use crate::messages;
 use messages::*;
@@ -42,17 +42,17 @@ impl App {
     }
 }
 
-impl lib_term::client::ShellClient<Message, Response> for App {
+impl {{project-name | snake_case}}::client::ShellClient<Message, Response> for App {
     fn server_url(&self) -> String {
         "127.0.0.1:8080".to_owned()
     }
 
-    fn on_key(&mut self, key: lib_term::client::Key) -> lib_term::client::KeyAction<Message> {
+    fn on_key(&mut self, key: {{project-name | snake_case}}::client::Key) -> {{project-name | snake_case}}::client::KeyAction<Message> {
         match key {
-            lib_term::client::Key::Ctrl('c') | lib_term::client::Key::Esc => {
-                return lib_term::client::KeyAction::Exit;
+            {{project-name | snake_case}}::client::Key::Ctrl('c') | {{project-name | snake_case}}::client::Key::Esc => {
+                return {{project-name | snake_case}}::client::KeyAction::Exit;
             }
-            lib_term::client::Key::Char('\n') => {
+            {{project-name | snake_case}}::client::Key::Char('\n') => {
                 let message = self.input.drain(..).collect::<String>();
                 match message.as_ref() {
                     "CHAT" => {
@@ -68,7 +68,7 @@ impl lib_term::client::ShellClient<Message, Response> for App {
                         };
                     }
                     _ => {
-                        return lib_term::client::KeyAction::SendMessage(Message {
+                        return {{project-name | snake_case}}::client::KeyAction::SendMessage(Message {
                             content: message,
                             mode: self.input_mode.clone(),
                             user_name: self.user_name.clone(),
@@ -76,16 +76,16 @@ impl lib_term::client::ShellClient<Message, Response> for App {
                     }
                 }
             }
-            lib_term::client::Key::Char(c) => {
+            {{project-name | snake_case}}::client::Key::Char(c) => {
                 self.input.push(c);
             }
-            lib_term::client::Key::Backspace => {
+            {{project-name | snake_case}}::client::Key::Backspace => {
                 self.input.pop();
             }
             _ => {}
         }
 
-        lib_term::client::KeyAction::DoNothing
+        {{project-name | snake_case}}::client::KeyAction::DoNothing
     }
 
     fn receive_response(&mut self, response: Response) {

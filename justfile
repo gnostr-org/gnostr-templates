@@ -6,7 +6,12 @@ build-all: generate-all
 build-all-release: generate-all
     cargo b -r
 install-all:
-    cargo install --path cli-generated
+    cargo install --force --path cli
+    cargo install --force --path component
+    cargo install --force --path lib-term
+    cargo install --force --path simple
+    cargo install --force --path user-input
+    cargo install --force --path lib
 
 generate-all:
     #git stash #--include-untracked -a

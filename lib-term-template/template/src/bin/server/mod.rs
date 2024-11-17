@@ -1,13 +1,13 @@
 use std::process::Command;
 
-extern crate lib_term;
-use lib_term::*;
+extern crate {{project-name | snake_case}};
+use {{project-name | snake_case}}::*;
 
 use messages::*;
 
 pub struct App();
 
-impl lib_term::server::ShellServer<Message, Response> for App {
+impl {{project-name | snake_case}}::server::ShellServer<Message, Response> for App {
     fn local_address(&self) -> String {
         "127.0.0.1:8080".to_owned()
     }
