@@ -1,3 +1,4 @@
 [workspace]
 resolver = "2"
-members = ["cli", "component", "dumbpipe", "gnostr-component", "lib", "term",  "simple", "simple-async", "user-input", "wasm-pack"]
+members = ["cli", "component", "dumbpipe", "gnostr-component", "gnostr-ui", "lib", "term",  "simple", "simple-async", "user-input", "wasm-pack"]
+exclude = ["nostui-template"]

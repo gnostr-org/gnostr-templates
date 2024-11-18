@@ -5,9 +5,10 @@ build-all: generate-all
     cargo b
 build-all-release: generate-all
     cargo b -r
-install-all:
+install-all: build-all-release
     cargo install --force --path cli
     cargo install --force --path component
+    #cargo install --force --path gnostr-ui
     cargo install --force --path term
     cargo install --force --path simple
     cargo install --force --path user-input
@@ -17,6 +18,7 @@ generate-all:
     #git stash #--include-untracked -a
     just generate-cli
     just gnostr-component
+    just generate-nostui
     just generate-component
     just generate-wasm-pack
     just generate-simple
@@ -35,6 +37,15 @@ gnostr-component:
         --define project-description="An example generated using the gnostr component template" \
         --define use-gitserver=false
     touch gnostr-component/.gitkeep
+
+generate-nostui:
+    mkdir -p gnostr-ui
+    rm -rv gnostr-ui
+    cargo generate --path ./nostui-template \
+        --name gnostr-ui \
+        --define project-description="An example generated using the gnostr component template" \
+        --define use-gitserver=false
+    touch gnostr-ui/.gitkeep
 
 generate-component:
     mkdir -p component
