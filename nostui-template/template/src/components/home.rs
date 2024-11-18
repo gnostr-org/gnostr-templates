@@ -284,8 +284,8 @@ impl<'a> Component for Home<'a> {
                     .borders(Borders::ALL)
                     .title("New note: Press ESC to close")
             };
-            self.input.set_block(block);
-            f.render_widget(self.input.widget(), input_area);
+            //self.input.set_block(block);
+            //f.render_widget(self.input.widget(), input_area);
         }
 
         Ok(())
