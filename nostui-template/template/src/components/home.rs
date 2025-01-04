@@ -281,8 +281,6 @@ impl<'a> Component for Home<'a> {
             assert!(textarea.block().is_some());
 
             let test_block = if let Some(ref reply_to) = self.reply_to {
-
-
                 let name = if let Some(profile) = self.profiles.get(&reply_to.pubkey) {
                     profile.name()
                 } else {
@@ -292,15 +290,11 @@ impl<'a> Component for Home<'a> {
                 ratatui::widgets::block::Block::default()
                     .borders(Borders::ALL)
                     .title(format!("Replying to {name}: Press ESC to close"))
-
             } else {
-
                 ratatui::widgets::block::Block::default()
                     .borders(Borders::ALL)
                     .title("New note: Press ESC to close")
             };
-
-
 
             //self.input.set_block(block);
             self.input.set_block(test_block);
