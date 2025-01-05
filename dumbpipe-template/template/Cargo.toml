@@ -25,4 +25,4 @@ nix = { version = "0.29", features = ["signal", "process"] }
 rand = "0.8.5"
 
 [patch.crates-io]
-iroh-net = { git = "https://github.com/n0-computer/iroh.git", branch = "main"}
+iroh-net = { git = "https://github.com/n0-computer/iroh.git", tag = "v0.27.0"}
