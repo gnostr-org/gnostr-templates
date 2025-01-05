@@ -1,4 +1,30 @@
 [workspace]
+members = [
+    "cli",
+    "component",
+    "dumbpipe",
+    "gnostr-component",
+    "gnostr-ui",
+    "lib",
+    "simple",
+    "simple-async",
+    "term",
+    "term-pipe",
+    "tui-logger",
+    "user-input",
+    "wasm-pack",
+]
+exclude = ["cli-template",
+"component-template",
+"dumbpipe-template",
+"gnostr-component-template",
+"lib-template",
+"logger-template",
+"nostui-template",
+"simple-async-template",
+"simple-template",
+"term-template",
+"user-input-template"
+]
+
 resolver = "2"
-members = ["cli", "component", "dumbpipe", "gnostr-component", "gnostr-ui", "lib", "term",  "simple", "simple-async", "user-input", "wasm-pack"]
-exclude = ["nostui-template"]
