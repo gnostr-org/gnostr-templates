@@ -82,10 +82,12 @@ impl Component for StatusBar {
             ])
             .split(area);
 
-        let name = Span::styled(self.name(), Style::default().fg(Color::Gray).italic());
+        let formatted_name = Line::from(format!(" {}", &self.name()));
+        let name = Text::from(formatted_name);
+        //let name = Span::styled(self.name(), Style::default().fg(Color::Gray).italic());
         let status_line = Paragraph::new(name).style(Style::default().bg(Color::Black));
         let message_line = if self.is_loading {
-            Paragraph::new("Loading...")
+            Paragraph::new(" Loading...")
         } else {
             Paragraph::new(self.message.clone().unwrap_or_default())
         };
