@@ -22,4 +22,20 @@ pub struct Cli {
         default_value_t = 16.0
     )]
     pub frame_rate: f64,
+    #[arg(
+        short,
+        long,
+        value_name = "PRIVATE_KEY",
+        help = "Frame rate, i.e. number of frames per second",
+        default_value_t = String::from("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
+    )]
+    pub private_key: String,
+    #[arg(
+        short,
+        long,
+        value_name = "RELAY",
+        help = "Frame rate, i.e. number of frames per second",
+        default_value_t = String::from("wss://relay.damus.io")
+    )]
+    pub relay: String,
 }
