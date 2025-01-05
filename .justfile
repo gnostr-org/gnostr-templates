@@ -22,11 +22,13 @@ build-all-release: generate-all
     #cargo b -r --bin tui-logger --features crossterm --manifest-path tui-logger/Cargo.toml
     cargo b -r --features crossterm
 
-install-all: build-all-release install-cli install-component install-gnostr-ui install-term install-simple install-simple-async install-tui-logger install-user-input install-lib
+install-all: build-all-release install-cli install-component install-dumbpipe install-gnostr-ui install-term install-simple install-simple-async install-tui-logger install-user-input install-lib
 install-cli:
     cargo install --force --path cli
 install-component:
     cargo install --force --path component
+install-dumbpipe:
+    cargo install --force --path dumbpipe
 install-gnostr-ui:
     cargo install --force --path gnostr-ui
 install-term:
