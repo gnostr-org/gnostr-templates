@@ -1,6 +1,6 @@
 #[workspace]
 [package]
-name = "{{project-name | snake_case}}"
+name = "{{project-name | kebab_case}}"
 version = "0.1.0"
 authors = ["{{authors}}"]
 license = "MIT"
@@ -11,7 +11,7 @@ name = "{{project-name | kebab_case}}"
 path = "./src/bin/main.rs"
 
 [[bin]]
-name = "{{project-name | kebab_case}}-pipe"
+name = "{{project-name | kebab_case}}-bin-pipe"
 path = "./src/bin/pipe.rs"
 
 [dependencies]
@@ -47,5 +47,5 @@ duct = "0.13.6"
 nix = { version = "0.29", features = ["signal", "process"] }
 rand = "0.8.5"
 
-[patch.crates-io]
-iroh-net = { git = "https://github.com/n0-computer/iroh.git", branch = "main"}
+#[patch.crates-io]
+#iroh-net = { git = "https://github.com/n0-computer/iroh.git", tag = "v0.27.0"}
