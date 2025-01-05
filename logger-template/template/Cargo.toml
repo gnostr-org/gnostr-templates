@@ -1,0 +1,55 @@
+[package]
+name = "tui-logger"
+version = "0.14.1"
+authors = ["Jochen Kiemes <jochen@kiemes.de>"]
+edition = "2021"
+license = "MIT"
+description = "Logger with smart widget for the `ratatui` crate"
+documentation = "https://docs.rs/tui-logger/latest/tui_logger/"
+repository = "https://github.com/gin66/tui-logger"
+readme = "README.md"
+keywords = ["tui", "log", "logger", "widget", "dispatcher"]
+
+[dependencies]
+log = "0.4"
+chrono = { version = "^0.4.38", default-features = false, features = ["clock"] }
+ratatui = { version = "0.29", default-features = false}
+tracing = {version = "0.1.40", optional = true}
+tracing-subscriber = {version = "0.3", optional = true}
+lazy_static = "1.5"
+fxhash = "0.2"
+parking_lot = "0.12"
+slog = { version = "2.7.0", optional = true }
+
+[dev-dependencies]
+# the crate is compatible with ratatui >=0.25.0, but the demo uses features from 0.27.0
+ratatui = { version = "0.29", default-features = false}
+anyhow = "1.0.91"
+env_logger = "0.11.5"
+termion = {version = "4.0.3" }
+crossterm = {version = "0.28"}
+
+[features]
+slog-support = ["slog"]
+tracing-support = ["tracing", "tracing-subscriber"]
+
+# only necessary for the demo, the crate does has no dependencies on these
+# 
+# feature_crossterm_or_termion_must_be_selected to generate one line error message
+# instead of many compile error messages, if neither crossterm nor termion are selected.
+feature_crossterm_or_termion_must_be_selected = []
+crossterm = ["ratatui/crossterm", "feature_crossterm_or_termion_must_be_selected"]
+termion = ["ratatui/termion", "feature_crossterm_or_termion_must_be_selected"]
+
+# Docs.rs-specific configuration required to enable documentation of
+# code requiring optional features.
+[package.metadata.docs.rs]
+# Document all features
+all-features = true
+# Defines the configuration attribute `docsrs`
+rustdoc-args = ["--cfg", "docsrs"]
+
+[[example]]
+name="demo"
+required-features=["feature_crossterm_or_termion_must_be_selected"]
+
