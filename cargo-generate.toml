@@ -2,4 +2,4 @@
 
 [template]
 cargo_generate_version = ">=0.20.0"
-sub_templates = ["cli-template", "component-template", "dumbpipe-template", "gnostr-component-template", "lib-template", "lib-term-template", "simple-async-template", "simple-template", "user-input-template"]
+sub_templates = ["cli-template", "component-template", "dumbpipe-template", "gnostr-component-template", "lib-template", "lib-term-template", "nostui-template", "simple-async-template", "simple-template", "user-input-template"]
