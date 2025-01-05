@@ -113,7 +113,11 @@ impl App {
 
             while let Ok(action) = action_rx.try_recv() {
                 if action != Action::Tick && action != Action::Render {
+
+
                     log::debug!("{action:?}");
+
+
                 }
                 match action {
                     Action::Tick => {
@@ -147,9 +151,19 @@ impl App {
                             }
                         })?;
                     }
+                    ///
+                    ///
+                    ///
                     Action::ReceiveEvent(ref event) => {
+
+
                         log::info!("Got nostr event: {event:?}");
+
+
                     }
+                    ///
+                    ///
+                    ///
                     Action::SendReaction((id, pubkey)) => {
                         let event = EventBuilder::new_reaction(id, pubkey, "+").to_event(&keys)?;
                         log::info!("Send reaction: {event:?}");
@@ -164,13 +178,23 @@ impl App {
                         let note1 = id.to_bech32()?;
                         action_tx.send(Action::SystemMessage(format!("[Reposted] {note1}")))?;
                     }
+                    ///
+                    ///
+                    ///
                     Action::SendTextNote(ref content, ref tags) => {
+
+
                         let event = EventBuilder::new_text_note(content, tags.iter().cloned())
                             .to_event(&keys)?;
                         log::info!("Send text note: {event:?}");
                         event_tx.send(event)?;
                         action_tx.send(Action::SystemMessage(format!("[Posted] {content}")))?;
+
+
                     }
+                    ///
+                    ///
+                    ///
                     _ => {}
                 }
                 for component in self.components.iter_mut() {
