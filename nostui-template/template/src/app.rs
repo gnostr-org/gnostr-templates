@@ -6,7 +6,7 @@ use tokio::sync::mpsc;
 
 use crate::{
     action::Action,
-    components::{Component, FpsCounter, Home, StatusBar},
+    components::{Component, FpsCounter, WeebleWobble, Home, StatusBar},
     config::Config,
     mode::Mode,
     nostr::Connection,
@@ -29,6 +29,7 @@ impl App {
     pub fn new(tick_rate: f64, frame_rate: f64) -> Result<Self> {
         let home = Home::new();
         let fps = FpsCounter::default();
+        let weeble_wobble = WeebleWobble::default();
         let config = Config::new()?;
         let pubkey = Keys::from_sk_str(config.privatekey.as_str())?.public_key();
         let status_bar = StatusBar::new(pubkey, None, None, true);
@@ -36,7 +37,12 @@ impl App {
         Ok(Self {
             tick_rate,
             frame_rate,
-            components: vec![Box::new(home), Box::new(fps), Box::new(status_bar)],
+            //order matters
+            //a component may obfuscate another component
+            //although no text is displayed
+            //weeble_wobble ... before fps in this case
+            //because they are in the same space
+            components: vec![Box::new(home), Box::new(weeble_wobble), Box::new(status_bar), Box::new(fps)],
             should_quit: false,
             should_suspend: false,
             config,
@@ -169,14 +175,14 @@ impl App {
                         log::info!("Send reaction: {event:?}");
                         event_tx.send(event)?;
                         let note1 = id.to_bech32()?;
-                        action_tx.send(Action::SystemMessage(format!("[Liked] {note1}")))?;
+                        action_tx.send(Action::SystemMessage(format!(" [Liked] {note1}")))?;
                     }
                     Action::SendRepost((id, pubkey)) => {
                         let event = EventBuilder::repost(id, pubkey).to_event(&keys)?;
                         log::info!("Send repost: {event:?}");
                         event_tx.send(event)?;
                         let note1 = id.to_bech32()?;
-                        action_tx.send(Action::SystemMessage(format!("[Reposted] {note1}")))?;
+                        action_tx.send(Action::SystemMessage(format!(" [Reposted] {note1}")))?;
                     }
                     ///
                     ///
@@ -188,7 +194,7 @@ impl App {
                             .to_event(&keys)?;
                         log::info!("Send text note: {event:?}");
                         event_tx.send(event)?;
-                        action_tx.send(Action::SystemMessage(format!("[Posted] {content}")))?;
+                        action_tx.send(Action::SystemMessage(format!(" [Posted] {content}")))?;
 
 
                     }

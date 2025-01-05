@@ -258,7 +258,7 @@ impl<'a> Component for Home<'a> {
         let list = List::new(items)
             .block(
                 widgets::block::Block::default()
-                    .title("Timeline")
+                    .title(" Timeline")
                     .padding(padding),
             )
             .style(Style::default().fg(Color::White))

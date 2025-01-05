@@ -7,7 +7,7 @@ use super::Component;
 use crate::{action::Action, tui::Frame};
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct FpsCounter {
+pub struct WeebleWobble {
     app_start_time: Instant,
     app_frames: u32,
     app_fps: f64,
@@ -17,13 +17,13 @@ pub struct FpsCounter {
     render_fps: f64,
 }
 
-impl Default for FpsCounter {
+impl Default for WeebleWobble {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl FpsCounter {
+impl WeebleWobble {
     pub fn new() -> Self {
         Self {
             app_start_time: Instant::now(),
@@ -60,7 +60,7 @@ impl FpsCounter {
     }
 }
 
-impl Component for FpsCounter {
+impl Component for WeebleWobble {
     fn update(&mut self, action: Action) -> Result<Option<Action>> {
         if let Action::Tick = action {
             self.app_tick()?
@@ -83,7 +83,7 @@ impl Component for FpsCounter {
         let rect = rects[0];
 
         let s = format!(
-            "tps/fps:{:.2}/{:.2} ",
+            "{:.2}/{:.2}/{{}}                     ",
             self.app_fps, self.render_fps
         );
         let block = Block::default().title(block::Title::from(s.dim()).alignment(Alignment::Right));
