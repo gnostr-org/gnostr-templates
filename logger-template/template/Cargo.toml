@@ -10,7 +10,12 @@ repository = "https://github.com/gin66/tui-logger"
 readme = "README.md"
 keywords = ["tui", "log", "logger", "widget", "dispatcher"]
 
+[[bin]]
+name = "tui-logger"
+path = "src/bin/tui-logger.rs"
+
 [dependencies]
+anyhow = "1.0.91"
 log = "0.4"
 chrono = { version = "^0.4.38", default-features = false, features = ["clock"] }
 ratatui = { version = "0.29", default-features = false}

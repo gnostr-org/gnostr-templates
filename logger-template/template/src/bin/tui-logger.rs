@@ -3,13 +3,16 @@ use std::{io, sync::mpsc, thread, time};
 use log::*;
 use ratatui::{prelude::*, widgets::*};
 use tui_logger::*;
+use crate::init_terminal;
 
 /// Choose the backend depending on the selected feature (crossterm or termion). This is a mutually
 /// exclusive feature, so only one of them can be enabled at a time.
 #[cfg(all(feature = "crossterm", not(feature = "termion")))]
 use self::crossterm_backend::*;
+use ratatui::crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 #[cfg(all(feature = "termion", not(feature = "crossterm")))]
 use self::termion_backend::*;
+//use termion::event::Key;
 #[cfg(not(any(feature = "crossterm", feature = "termion")))]
 compile_error!("One of the features 'crossterm' or 'termion' must be enabled.");
 #[cfg(all(feature = "crossterm", feature = "termion"))]
@@ -37,7 +40,7 @@ enum AppEvent {
 }
 
 fn main() -> anyhow::Result<()> {
-    init_logger(LevelFilter::Trace)?;
+    tui_logger::init_logger(LevelFilter::Trace)?;
     set_default_level(LevelFilter::Trace);
     debug!(target:"App", "Logging initialized");
 
@@ -282,7 +285,7 @@ impl Widget for &mut App {
 mod crossterm_backend {
     use super::*;
 
-    pub use crossterm::{
+    pub use ratatui::crossterm::{
         event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode as Key},
         execute,
         terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
