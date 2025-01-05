@@ -9,6 +9,7 @@ dumbpipe/
 gnostr-component/
 term/
 term-pipe/
+tui-logger/
 lib/
 simple-async/
 simple/
