@@ -15,6 +15,9 @@ pub struct WeebleWobble {
     render_start_time: Instant,
     render_frames: u32,
     render_fps: f64,
+    weeble: String,
+    blockheight: String,
+    wobble: String,
 }
 
 impl Default for WeebleWobble {
@@ -32,7 +35,23 @@ impl WeebleWobble {
             render_start_time: Instant::now(),
             render_frames: 0,
             render_fps: 0.0,
+            weeble: String::from(""),
+            blockheight: String::from(""),
+            wobble: String::from(""),
         }
+    }
+
+    fn weeble(&mut self) -> String {
+
+        String::from("0")
+    }
+    fn blockheight(&mut self) -> String {
+
+        String::from("0")
+    }
+    fn wobble(&mut self) -> String {
+
+        String::from("0")
     }
 
     fn app_tick(&mut self) -> Result<()> {
@@ -44,6 +63,10 @@ impl WeebleWobble {
             self.app_start_time = now;
             self.app_frames = 0;
         }
+        self.weeble = self.weeble();
+        self.blockheight = self.blockheight();
+        self.wobble = self.wobble();
+
         Ok(())
     }
 
@@ -83,8 +106,8 @@ impl Component for WeebleWobble {
         let rect = rects[0];
 
         let s = format!(
-            "{:.2}/{:.2}/{{}}                     ",
-            self.app_fps, self.render_fps
+            "{:}/{:}/{}                     ",
+            self.weeble, self.blockheight, self.wobble
         );
         let block = Block::default().title(block::Title::from(s.dim()).alignment(Alignment::Right));
         f.render_widget(block, rect);
