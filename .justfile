@@ -15,10 +15,12 @@ book:
     mdbook serve --open || cargo  install mdbook --vers "0.4.43"
 
 build-all: generate-all
-    cargo b
+    #cargo b --bin tui-logger --features crossterm --manifest-path tui-logger/Cargo.toml
+    cargo b --features crossterm
 
 build-all-release: generate-all
-    cargo b -r
+    #cargo b -r --bin tui-logger --features crossterm --manifest-path tui-logger/Cargo.toml
+    cargo b -r --features crossterm
 
 install-all: build-all-release
     cargo install --force --path cli
@@ -148,10 +150,10 @@ run:
     cargo  run --bin rust-cookbook -- -h || true
 
 build:
-    cargo  build --bins || true
+    cargo  build --bins --features crossterm || true
 
 build-examples:
-    cargo  build --examples || true
+    cargo b --example demo --manifest-path tui-logger/Cargo.toml --features crossterm || true
 
 check:
     cargo  check || true
@@ -171,3 +173,7 @@ future:
 
 watch:
     cargo watch -x check -x test -x build
+
+# vim: set list:
+# vim: set expandtab:
+# vim: set setfiletype make
