@@ -26,5 +26,6 @@ exclude = [
     "simple-template",
     "term-template",
     "user-input-template",
+    "wasm-pack",
 ]
 resolver = "2"
