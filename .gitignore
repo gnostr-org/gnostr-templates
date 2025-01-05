@@ -7,7 +7,7 @@ cli/
 component/
 dumbpipe/
 gnostr-component/
-term/
+term-pipe/
 lib/
 simple-async/
 simple/
