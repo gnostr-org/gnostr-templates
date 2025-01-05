@@ -14,17 +14,17 @@ members = [
     "user-input",
     "wasm-pack",
 ]
-exclude = ["cli-template",
-"component-template",
-"dumbpipe-template",
-"gnostr-component-template",
-"lib-template",
-"logger-template",
-"nostui-template",
-"simple-async-template",
-"simple-template",
-"term-template",
-"user-input-template"
+exclude = [
+    "cli-template",
+    "component-template",
+    "dumbpipe-template",
+    "gnostr-component-template",
+    "lib-template",
+    "logger-template",
+    "nostui-template",
+    "simple-async-template",
+    "simple-template",
+    "term-template",
+    "user-input-template",
 ]
-
 resolver = "2"
