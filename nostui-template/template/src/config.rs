@@ -7,9 +7,65 @@ use color_eyre::eyre::Result;
 use config::ConfigError;
 use serde::Deserialize;
 
+use serde_json;
+
 use crate::utils;
 
 const CONFIG: &str = include_str!("../.config/config.json5");
+
+const DEFAULT_CONFIG: &str = r#"{
+  "keybindings": {
+    "Home": {
+
+      "<up>": "ScrollUp",            // Scroll up the page
+      "<k>": "ScrollUp",             // Scroll up the page
+      "<Shift-k>": "ScrollUp",             // Scroll up the page
+
+      "<down>": "ScrollDown",        // Scroll down the page
+      "<j>": "ScrollDown",           // Scroll down the page
+      "<Shift-j>": "ScrollDown",           // Scroll down the page
+
+      "<home>": "ScrollToTop",       // Scroll to top of the page
+      "<Shift-h>": "ScrollToTop",          // Scroll to top of the page
+
+      "<end>": "ScrollToBottom",     // Scroll to bottom of the page
+      "<Shift-l>": "ScrollToBottom",       // Scroll to bottom of the page
+
+      "<a>": "React", // Like a post // React to the post
+      "<l>": "React", // Like a post // React to the post
+      "<r>": "Repost",               // Repost the post
+      "<u>": "Repost",               // Repost the post
+
+      "<esc>": "Unselect",           // Unselect the posts
+
+      "<q>": "Quit",                 // Quit the application
+
+      "<Ctrl-d>": "Quit",            // Another way to quit
+      "<Ctrl-c>": "Quit",            // Yet another way to quit
+
+      "<Ctrl-z>": "Suspend",         // Suspend the application
+
+      "<n>": "NewTextNote",          // Show the text note input form
+
+      "<c>": "NewTextNote",          // Show the text note input form
+
+      "<Shift-r>": "ReplyTextNote",  // Show the text note input form to reply
+
+      "<Ctrl-space>": "SubmitTextNote",  // Submit the text note on input form
+      "<Ctrl-p>": "SubmitTextNote",  // Submit the text note on input form
+      "<Ctrl-q>": "SubmitTextNote"   // Submit the text note on input form
+    }
+  },
+  "relays": [
+    "wss://nos.lol",
+    "wss://relay.damus.io",
+    "wss://yabu.me",
+    "wss://relay-jp.nostr.wirednet.jp"
+  ]
+}"#;
+
+
+const DEFAULT_USER_CONFIG: &str = r#"{"privatekey": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","relays": ["wss://relay.damus.io", "wss://e.nos.lol"]}"#;
 
 #[derive(Clone, Debug, Deserialize, Default)]
 pub struct AppConfig {
@@ -35,7 +91,7 @@ pub struct Config {
 
 impl Config {
     pub fn new() -> Result<Self, config::ConfigError> {
-        let default_config: Config = json5::from_str(CONFIG).unwrap();
+        let default_config: Config = json5::from_str(DEFAULT_CONFIG).unwrap();
         let data_dir = utils::get_data_dir();
         let config_dir = utils::get_config_dir();
         let mut builder = config::Config::builder()
@@ -43,11 +99,11 @@ impl Config {
             .set_default("_config_dir", config_dir.to_str().unwrap())?;
 
         let config_files = [
-            ("config.json5", config::FileFormat::Json5),
+            //("config.json5", config::FileFormat::Json5),
             ("config.json", config::FileFormat::Json),
-            ("config.yaml", config::FileFormat::Yaml),
-            ("config.toml", config::FileFormat::Toml),
-            ("config.ini", config::FileFormat::Ini),
+            //("config.yaml", config::FileFormat::Yaml),
+            //("config.toml", config::FileFormat::Toml),
+            //("config.ini", config::FileFormat::Ini),
         ];
         let mut found_config = false;
         for (file, format) in &config_files {
@@ -58,13 +114,13 @@ impl Config {
             );
             if config_dir.join(file).exists() {
                 found_config = true
+            } else {
+                let file_path = PathBuf::from(config_dir.clone()).join(file);
+                std::fs::write(&file_path, DEFAULT_USER_CONFIG);
             }
         }
         if !found_config {
-            log::error!("No configuration file found");
-            return Err(ConfigError::Message(String::from(
-                "No configuration file found",
-            )));
+            log::info!("No configuration file found");
         }
 
         let mut cfg: Self = builder.build()?.try_deserialize()?;
