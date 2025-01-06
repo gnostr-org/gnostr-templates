@@ -155,6 +155,9 @@ impl App {
 
             while let Ok(event) = req_rx.try_recv() {
                 action_tx.send(Action::ReceiveEvent(event))?;
+                        self.task = tokio::spawn(async move {
+                            Self::app_async_entrypoint(0).await;
+                        });
             }
 
             while let Ok(action) = action_rx.try_recv() {
