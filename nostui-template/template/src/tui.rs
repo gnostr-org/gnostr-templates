@@ -121,6 +121,11 @@ impl Tui {
         self.task = tokio::spawn(async move {
             //async
             Self::tui_async_entrypoint(0).await;
+            log::info!("124:....");
+            tokio::spawn(async move {
+            Self::tui_async_entrypoint(2).await
+            });
+            log::info!("128:....");
             let mut reader = crossterm::event::EventStream::new();
             let mut tick_interval = tokio::time::interval(tick_delay);
             let mut render_interval = tokio::time::interval(render_delay);
