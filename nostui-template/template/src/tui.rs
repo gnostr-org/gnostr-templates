@@ -62,7 +62,9 @@ impl Tui {
         let terminal = ratatui::Terminal::new(Backend::new(io()))?;
         let (event_tx, event_rx) = mpsc::unbounded_channel();
         let cancellation_token = CancellationToken::new();
+        //async
         let task = tokio::spawn(async {});
+
         let mouse = false;
         let paste = false;
         Ok(Self {
@@ -105,19 +107,24 @@ impl Tui {
         self.cancellation_token = CancellationToken::new();
         let _cancellation_token = self.cancellation_token.clone();
         let _event_tx = self.event_tx.clone();
+        //async
         self.task = tokio::spawn(async move {
+            //async
             let mut reader = crossterm::event::EventStream::new();
             let mut tick_interval = tokio::time::interval(tick_delay);
             let mut render_interval = tokio::time::interval(render_delay);
             _event_tx.send(Event::Init).unwrap();
+            //async
             loop {
                 let tick_delay = tick_interval.tick();
                 let render_delay = render_interval.tick();
                 let crossterm_event = reader.next().fuse();
+                //async
                 tokio::select! {
                   _ = _cancellation_token.cancelled() => {
                     break;
                   }
+                  //
                   maybe_event = crossterm_event => {
                     match maybe_event {
                       Some(Ok(evt)) => {
@@ -156,10 +163,10 @@ impl Tui {
                   _ = render_delay => {
                       _event_tx.send(Event::Render).unwrap();
                   },
-                }
-            }
-        });
-    }
+                }//
+            }//
+        });//self.task end
+    }//fn start end
 
     pub fn stop(&self) -> Result<()> {
         self.cancel();
@@ -223,6 +230,7 @@ impl Tui {
         Ok(())
     }
 
+    //async
     pub async fn next(&mut self) -> Option<Event> {
         self.event_rx.recv().await
     }
