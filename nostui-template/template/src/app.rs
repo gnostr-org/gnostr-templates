@@ -10,6 +10,9 @@ use tokio::{
 };
 use tokio_util::sync::CancellationToken;
 
+use std::sync::Arc;
+use tokio::sync::Semaphore;
+
 use crate::{
     action::Action,
     components::{Component, FpsCounter, WeebleWobble, Home, StatusBar},
@@ -66,6 +69,18 @@ impl App {
          log::info!("app_async_entrypoint:{} finish", timer);
      }
      async fn app_render_async_entrypoint(timer: i32) {
+    let TASKS_LIMIT = 3;
+    let semaphore = Arc::new(Semaphore::new(TASKS_LIMIT));
+
+    for _ in 0..5 {
+        let permit = semaphore.clone().acquire_owned().await.unwrap();
+        tokio::spawn(async move {
+            // perform task...
+            // explicitly own `permit` in the task
+            drop(permit);
+        });
+    }
+    semaphore.acquire_many(TASKS_LIMIT as u32).await.unwrap();
          log::info!("app_render_async_entrypoint:{} start", timer);
          std::thread::sleep(Duration::from_secs(0));
          log::info!("app_render_async_entrypoint:{} finish", timer);
