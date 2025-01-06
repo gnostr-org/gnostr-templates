@@ -99,6 +99,22 @@ impl App {
          std::thread::sleep(Duration::from_secs(0));
          log::info!("app_render_async_entrypoint:{} finish", timer);
      }
+     async fn app_nested_async_entrypoint(timer: i32) {
+         let TASKS_LIMIT = 3;
+         let semaphore = Arc::new(Semaphore::new(TASKS_LIMIT));
+
+         for count in 0..5 {
+             let permit = semaphore.clone().acquire_owned().await.unwrap();
+             tokio::spawn(async move {
+             log::info!("app_nested_async_entrypoint:{} inner start {}", timer, count);
+             Self::app_async_entrypoint(0);
+             Self::app_render_async_entrypoint(0);
+             log::info!("app_nested_async_entrypoint:{} inner finish {}", timer, count);
+             drop(permit);
+             });
+         }
+         semaphore.acquire_many(TASKS_LIMIT as u32).await.unwrap();
+     }
 
     //async
     pub async fn run(&mut self) -> Result<()> {
@@ -222,6 +238,9 @@ impl App {
                         log::info!("Action::Render");
                         self.task = tokio::spawn(async move {
                             Self::app_render_async_entrypoint(0).await;
+                        });
+                        self.task = tokio::spawn(async move {
+                            Self::app_nested_async_entrypoint(0).await;
                         });
                         //no Self::sleep_then_print(0).await;
                         tui.draw(|f| {
