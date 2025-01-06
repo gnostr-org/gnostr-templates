@@ -244,6 +244,11 @@ impl Tui {
     //async
     pub async fn next(&mut self) -> Option<Event> {
         //no Self::tui_async_entrypoint(0).await;
+        //log::info!("247:....");
+        //no tokio::spawn(async move {
+        //no Self::tui_async_entrypoint(0).await
+        //no });
+        //log::info!("251:....");
         self.event_rx.recv().await
     }
 }
