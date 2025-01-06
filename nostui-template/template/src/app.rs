@@ -2,8 +2,14 @@ use color_eyre::eyre::Result;
 use crossterm::event::KeyEvent;
 use nostr_sdk::prelude::*;
 use ratatui::prelude::Rect;
-use tokio::sync::mpsc;
+//use tokio::sync::mpsc;
 use tokio::time::Duration;
+use tokio::{
+    sync::mpsc::{self, UnboundedReceiver, UnboundedSender},
+    task::JoinHandle,
+};
+use tokio_util::sync::CancellationToken;
+
 use crate::{
     action::Action,
     components::{Component, FpsCounter, WeebleWobble, Home, StatusBar},
@@ -23,6 +29,7 @@ pub struct App {
     pub should_suspend: bool,
     pub mode: Mode,
     pub last_tick_key_events: Vec<KeyEvent>,
+    pub task: JoinHandle<()>,
 }
 
 impl App {
@@ -34,6 +41,7 @@ impl App {
         let pubkey = Keys::from_sk_str(config.privatekey.as_str())?.public_key();
         let status_bar = StatusBar::new(pubkey, None, None, true);
         let mode = Mode::Home;
+        let task = tokio::spawn(async {});
         Ok(Self {
             tick_rate,
             frame_rate,
@@ -48,11 +56,12 @@ impl App {
             config,
             mode,
             last_tick_key_events: Vec::new(),
+            task,
         })
     }
 
 
-     async fn sleep_then_print(timer: i32) {
+     async fn app_async_entrypoint(timer: i32) {
          //println!("Start timer {}.", timer);
          log::info!("app:>>>>>----------->>>Start timer {}.", timer);
 
@@ -72,16 +81,20 @@ impl App {
             .frame_rate(self.frame_rate);
         // tui.mouse(true);
         tui.enter()?;
+        Self::app_async_entrypoint(0).await;
 
         for component in self.components.iter_mut() {
+        Self::app_async_entrypoint(1).await;
             component.register_action_handler(action_tx.clone())?;
         }
 
         for component in self.components.iter_mut() {
+        Self::app_async_entrypoint(2).await;
             component.register_config_handler(self.config.clone())?;
         }
 
         for component in self.components.iter_mut() {
+        Self::app_async_entrypoint(3).await;
             component.init(tui.size()?)?;
         }
 
@@ -90,8 +103,11 @@ impl App {
         let (mut req_rx, event_tx, terminate_tx, conn_wrapper) = ConnectionProcess::new(conn)?;
         conn_wrapper.run();
 
+        self.task = tokio::spawn(async move {});
         loop {
+        //no Self::app_async_entrypoint(0).await;
             if let Some(e) = tui.next().await {
+            //no Self::app_async_entrypoint(0).await;
                 match e {
                     tui::Event::Quit => action_tx.send(Action::Quit)?,
                     tui::Event::Tick => action_tx.send(Action::Tick)?,
