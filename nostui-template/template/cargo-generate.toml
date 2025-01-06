@@ -1,5 +1,0 @@
-[hooks]
-pre = ["./hooks/pre-get-repository.rhai"]
-
-[template]
-cargo_generate_version = ">=0.10.0"

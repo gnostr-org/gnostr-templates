@@ -48,7 +48,7 @@ generate-all:
     #git stash #--include-untracked -a
     just generate-cli
     just gnostr-component
-    just generate-nostui
+    just generate-gnostr-ui
     just generate-component
     just generate-wasm-pack
     just generate-simple
@@ -69,10 +69,10 @@ gnostr-component:
         --define use-gitserver=false
     touch gnostr-component/.gitkeep
 
-generate-nostui:
+generate-gnostr-ui:
     mkdir -p gnostr-ui
     rm -rv gnostr-ui
-    cargo generate --path ./nostui-template \
+    cargo generate --path ./gnostr-ui-template \
         --name gnostr-ui \
         --define project-description="An example generated using the gnostr component template" \
         --define use-gitserver=false
