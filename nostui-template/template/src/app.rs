@@ -51,6 +51,7 @@ impl App {
         })
     }
 
+    //async
     pub async fn run(&mut self) -> Result<()> {
         let (action_tx, mut action_rx) = mpsc::unbounded_channel();
 
