@@ -63,6 +63,38 @@ impl App {
         })
     }
 
+    async fn async_reqwest() -> Result<(), reqwest::Error> {
+        // Some simple CLI args requirements...
+        log::info!("async_reqwest:Fetching...");
+        log::info!("async_reqwest:Fetching...");
+        log::info!("async_reqwest:Fetching...");
+        log::info!("async_reqwest:Fetching...");
+        log::info!("async_reqwest:Fetching...");
+        let url = if let Some(url) = std::env::args().nth(1) {
+            url
+        } else {
+            log::info!("No CLI URL provided, using default.");
+            "https://mempool.space/api/blocks/tip/height".into()
+        };
+    
+        //log::info!("Fetching {url:?}...");
+    
+        // reqwest::get() is a convenience function.
+        //
+        // In most cases, you should create/build a reqwest::Client and reuse
+        // it for all requests.
+        let res = reqwest::get(url).await?;
+    
+        log::info!("Response: {:?} {}", res.version(), res.status());
+        log::info!("Headers: {:#?}\n", res.headers());
+    
+        let body = res.text().await?;
+    
+        log::info!("{body}");
+    
+        Ok(())
+    }
+
      async fn app_async_entrypoint(timer: i32) {
          let TASKS_LIMIT = 3;
          let semaphore = Arc::new(Semaphore::new(TASKS_LIMIT));
@@ -82,6 +114,7 @@ impl App {
          log::info!("app_async_entrypoint:{} finish", timer);
      }
      async fn app_render_async_entrypoint(timer: i32) {
+         Self::async_reqwest();
          let TASKS_LIMIT = 3;
          let semaphore = Arc::new(Semaphore::new(TASKS_LIMIT));
 
@@ -97,6 +130,7 @@ impl App {
          semaphore.acquire_many(TASKS_LIMIT as u32).await.unwrap();
          log::info!("app_render_async_entrypoint:{} start", timer);
          std::thread::sleep(Duration::from_secs(0));
+         Self::async_reqwest();
          log::info!("app_render_async_entrypoint:{} finish", timer);
      }
      async fn app_nested_async_entrypoint(timer: i32) {
@@ -109,6 +143,7 @@ impl App {
              log::info!("app_nested_async_entrypoint:{} inner start {}", timer, count);
              Self::app_async_entrypoint(0);
              Self::app_render_async_entrypoint(0);
+             Self::async_reqwest();
              log::info!("app_nested_async_entrypoint:{} inner finish {}", timer, count);
              drop(permit);
              });
@@ -238,6 +273,7 @@ impl App {
                         log::info!("Action::Render");
                         self.task = tokio::spawn(async move {
                             Self::app_render_async_entrypoint(0).await;
+                            Self::async_reqwest().await;
                         });
                         self.task = tokio::spawn(async move {
                             Self::app_nested_async_entrypoint(0).await;
