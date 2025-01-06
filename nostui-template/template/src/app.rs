@@ -60,26 +60,15 @@ impl App {
         })
     }
 
-
      async fn app_async_entrypoint(timer: i32) {
-         //println!("Start timer {}.", timer);
-         log::info!("app:>>>>>----------->>>Start timer {}.", timer);
-
-         // No .await here!
-         std::thread::sleep(Duration::from_secs(1));
-
-         //println!("Timer {} done.", timer);
-         log::info!("app:>>>>>----------->>>Timer {} done.", timer);
+         log::info!("app_async_entrypoint:{} start", timer);
+         std::thread::sleep(Duration::from_secs(0));
+         log::info!("app_async_entrypoint:{} finish", timer);
      }
      async fn app_render_async_entrypoint(timer: i32) {
-         //println!("Start timer {}.", timer);
-         log::info!("app_render:>>>>>----------->>>Start timer {}.", timer);
-
-         // No .await here!
+         log::info!("app_render_async_entrypoint:{} start", timer);
          std::thread::sleep(Duration::from_secs(0));
-
-         //println!("Timer {} done.", timer);
-         log::info!("app_render:>>>>>----------->>>Timer {} done.", timer);
+         log::info!("app_render_async_entrypoint:{} finish", timer);
      }
 
     //async
