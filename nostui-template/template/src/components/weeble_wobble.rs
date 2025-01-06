@@ -24,7 +24,9 @@ pub struct WeebleWobble {
     weeble: String,
     blockheight: String,
     wobble: String,
-    task: JoinHandle<()>,
+    weeble_task: JoinHandle<()>,
+    blockheight_task: JoinHandle<()>,
+    wobble_task: JoinHandle<()>,
 }
 
 impl Default for WeebleWobble {
@@ -35,7 +37,9 @@ impl Default for WeebleWobble {
 
 impl WeebleWobble {
     pub fn new() -> Self {
-        let task = tokio::spawn(async {});
+        let weeble_task = tokio::spawn(async {});
+        let blockheight_task = tokio::spawn(async {});
+        let wobble_task = tokio::spawn(async {});
         Self {
             app_start_time: Instant::now(),
             app_frames: 0,
@@ -46,19 +50,30 @@ impl WeebleWobble {
             weeble: String::from(""),
             blockheight: String::from(""),
             wobble: String::from(""),
-            task,
+            weeble_task,
+            blockheight_task,
+            wobble_task,
         }
     }
 
     fn weeble(&mut self) -> String {
+        self.weeble_task = tokio::spawn(async move {
+
+        });
 
         String::from("0")
     }
     fn blockheight(&mut self) -> String {
+        self.blockheight_task = tokio::spawn(async move {
+
+        });
 
         String::from("0")
     }
     fn wobble(&mut self) -> String {
+        self.wobble_task = tokio::spawn(async move {
+
+        });
 
         String::from("0")
     }
@@ -72,9 +87,11 @@ impl WeebleWobble {
             self.app_start_time = now;
             self.app_frames = 0;
         }
-        self.weeble = self.weeble();
-        self.blockheight = self.blockheight();
-        self.wobble = self.wobble();
+        //self.task = tokio::spawn(async move {
+            self.weeble = self.weeble();
+            self.blockheight = self.blockheight();
+            self.wobble = self.wobble();
+        //});
 
         Ok(())
     }
