@@ -71,6 +71,16 @@ impl App {
          //println!("Timer {} done.", timer);
          log::info!("app:>>>>>----------->>>Timer {} done.", timer);
      }
+     async fn app_render_async_entrypoint(timer: i32) {
+         //println!("Start timer {}.", timer);
+         log::info!("app_render:>>>>>----------->>>Start timer {}.", timer);
+
+         // No .await here!
+         std::thread::sleep(Duration::from_secs(0));
+
+         //println!("Timer {} done.", timer);
+         log::info!("app_render:>>>>>----------->>>Timer {} done.", timer);
+     }
 
     //async
     pub async fn run(&mut self) -> Result<()> {
@@ -156,18 +166,23 @@ impl App {
             while let Ok(event) = req_rx.try_recv() {
                 action_tx.send(Action::ReceiveEvent(event))?;
                         self.task = tokio::spawn(async move {
-                            Self::app_async_entrypoint(0).await;
+                            Self::app_async_entrypoint(1).await;
                         });
             }
 
             while let Ok(action) = action_rx.try_recv() {
                 if action != Action::Tick && action != Action::Render {
                     log::debug!("{action:?}");
+                        //self.task = tokio::spawn(async move {
+                        //    Self::app_async_entrypoint(2).await;
+                        //});
                 }
                 match action {
                     Action::Tick => {
                         self.last_tick_key_events.drain(..);
-                        //no Self::sleep_then_print(0).await;
+                        //self.task = tokio::spawn(async move {
+                        //    Self::app_async_entrypoint(3).await;
+                        //});
                     }
                     Action::Quit => self.should_quit = true,
                     Action::Suspend => self.should_suspend = true,
@@ -187,6 +202,9 @@ impl App {
                     }
                     Action::Render => {
                         log::info!("Action::Render");
+                        self.task = tokio::spawn(async move {
+                            Self::app_render_async_entrypoint(0).await;
+                        });
                         //no Self::sleep_then_print(0).await;
                         tui.draw(|f| {
                             for component in self.components.iter_mut() {
