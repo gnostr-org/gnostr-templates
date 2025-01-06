@@ -100,16 +100,37 @@ impl Tui {
         self
     }
 
+    async fn sleep_then_print(timer: i32) {
+        log::info!("tui:>>>>>----------->>>Start timer {}.", timer);
+    
+        // No .await here!
+        std::thread::sleep(Duration::from_secs(1));
+    
+        log::info!("tui:>>>>>----------->>>Timer {} done.", timer);
+    }
+
+
     pub fn start(&mut self) {
+        //call to non-async self.tick_rate
         let tick_delay = std::time::Duration::from_secs_f64(1.0 / self.tick_rate);
+        //call to non-async self.frame_rate
         let render_delay = std::time::Duration::from_secs_f64(1.0 / self.frame_rate);
         self.cancel();
         self.cancellation_token = CancellationToken::new();
         let _cancellation_token = self.cancellation_token.clone();
         let _event_tx = self.event_tx.clone();
         //async
+        //self.task = tokio::join!(
+          //  Self::sleep_then_print(1),
+          //  Self::sleep_then_print(2),
+          //  Self::sleep_then_print(3),
+        //);
+        //async
         self.task = tokio::spawn(async move {
             //async
+            Self::sleep_then_print(1).await;
+            Self::sleep_then_print(2).await;
+            Self::sleep_then_print(3).await;
             let mut reader = crossterm::event::EventStream::new();
             let mut tick_interval = tokio::time::interval(tick_delay);
             let mut render_interval = tokio::time::interval(render_delay);
