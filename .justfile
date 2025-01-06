@@ -158,7 +158,8 @@ test:
     cargo  test -- --nocapture
 
 run:
-    cargo  run --bin rust-cookbook -- -h || true
+    cargo  run --bin gnostr-ui -- -h || true
+    cargo  run --bin gnostr-ui || true
 
 build:
     cargo  build --bins --features crossterm || true
