@@ -84,17 +84,17 @@ impl App {
         Self::app_async_entrypoint(0).await;
 
         for component in self.components.iter_mut() {
-        Self::app_async_entrypoint(1).await;
+        Self::app_async_entrypoint(0).await;
             component.register_action_handler(action_tx.clone())?;
         }
 
         for component in self.components.iter_mut() {
-        Self::app_async_entrypoint(2).await;
+        Self::app_async_entrypoint(0).await;
             component.register_config_handler(self.config.clone())?;
         }
 
         for component in self.components.iter_mut() {
-        Self::app_async_entrypoint(3).await;
+        Self::app_async_entrypoint(1).await;
             component.init(tui.size()?)?;
         }
 
@@ -104,12 +104,17 @@ impl App {
         conn_wrapper.run();
 
         self.task = tokio::spawn(async move {
-            Self::app_async_entrypoint(5).await;
+            Self::app_async_entrypoint(0).await;
         });
         loop {
+        //no self.task = tokio::spawn(async move {
+        //    Self::app_async_entrypoint(0).await;
+        //});
         //no Self::app_async_entrypoint(0).await;
             if let Some(e) = tui.next().await {
-            //no Self::app_async_entrypoint(0).await;
+            //no self.task = tokio::spawn(async move {
+            //no     Self::app_async_entrypoint(0).await;
+            //no });
                 match e {
                     tui::Event::Quit => action_tx.send(Action::Quit)?,
                     tui::Event::Tick => action_tx.send(Action::Tick)?,
@@ -141,8 +146,9 @@ impl App {
                 for component in self.components.iter_mut() {
                     if let Some(action) = component.handle_events(Some(e.clone()))? {
                         action_tx.send(action)?;
-                        //not a good async entrypoint
-                        //no Self::sleep_then_print(0).await;
+                        self.task = tokio::spawn(async move {
+                            Self::app_async_entrypoint(0).await;
+                        });
                     }
                 }
             }
