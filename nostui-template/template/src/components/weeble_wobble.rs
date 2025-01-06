@@ -27,6 +27,7 @@ pub struct WeebleWobble {
     weeble_task: JoinHandle<()>,
     blockheight_task: JoinHandle<()>,
     wobble_task: JoinHandle<()>,
+    task: JoinHandle<()>,
 }
 
 impl Default for WeebleWobble {
@@ -40,6 +41,7 @@ impl WeebleWobble {
         let weeble_task = tokio::spawn(async {});
         let blockheight_task = tokio::spawn(async {});
         let wobble_task = tokio::spawn(async {});
+        let task = tokio::spawn(async {});
         Self {
             app_start_time: Instant::now(),
             app_frames: 0,
@@ -53,6 +55,7 @@ impl WeebleWobble {
             weeble_task,
             blockheight_task,
             wobble_task,
+            task,
         }
     }
 
@@ -87,7 +90,7 @@ impl WeebleWobble {
             self.app_start_time = now;
             self.app_frames = 0;
         }
-        //self.task = tokio::spawn(async move {
+        //let _ = tokio::spawn(async move {
             self.weeble = self.weeble();
             self.blockheight = self.blockheight();
             self.wobble = self.wobble();

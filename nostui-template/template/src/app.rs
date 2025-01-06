@@ -53,14 +53,14 @@ impl App {
 
 
      async fn sleep_then_print(timer: i32) {
-         println!("Start timer {}.", timer);
-         log::info!(">>>>>----------->>>Start timer {}.", timer);
+         //println!("Start timer {}.", timer);
+         log::info!("app:>>>>>----------->>>Start timer {}.", timer);
 
          // No .await here!
          std::thread::sleep(Duration::from_secs(1));
 
-         println!("Timer {} done.", timer);
-         log::info!(">>>>>----------->>>Timer {} done.", timer);
+         //println!("Timer {} done.", timer);
+         log::info!("app:>>>>>----------->>>Timer {} done.", timer);
      }
 
     //async
@@ -103,15 +103,13 @@ impl App {
                         if let Some(keymap) = self.config.keybindings.get(&self.mode) {
                             if let Some(action) = keymap.get(&vec![key]) {
                                 log::info!("Got action: {action:?}");
-                                Self::sleep_then_print(10).await;
-                                Self::sleep_then_print(20).await;
-                                Self::sleep_then_print(30).await;
+                                //not a good async entrypoint
+                                //no Self::sleep_then_print(0).await;
                                 action_tx.send(action.clone())?;
                             } else {
                                 // If the key was not handled as a single key action,
                                 // then consider it for multi-key combinations.
                                 self.last_tick_key_events.push(key);
-
                                 // Check for multi-key combinations
                                 if let Some(action) = keymap.get(&self.last_tick_key_events) {
                                     log::info!("Got action: {action:?}");
@@ -125,6 +123,8 @@ impl App {
                 for component in self.components.iter_mut() {
                     if let Some(action) = component.handle_events(Some(e.clone()))? {
                         action_tx.send(action)?;
+                        //not a good async entrypoint
+                        //no Self::sleep_then_print(0).await;
                     }
                 }
             }
@@ -135,15 +135,12 @@ impl App {
 
             while let Ok(action) = action_rx.try_recv() {
                 if action != Action::Tick && action != Action::Render {
-
-
                     log::debug!("{action:?}");
-
-
                 }
                 match action {
                     Action::Tick => {
                         self.last_tick_key_events.drain(..);
+                        //no Self::sleep_then_print(0).await;
                     }
                     Action::Quit => self.should_quit = true,
                     Action::Suspend => self.should_suspend = true,
@@ -162,6 +159,8 @@ impl App {
                         })?;
                     }
                     Action::Render => {
+                        log::info!("Action::Render");
+                        //no Self::sleep_then_print(0).await;
                         tui.draw(|f| {
                             for component in self.components.iter_mut() {
                                 let r = component.draw(f, f.size());
@@ -177,16 +176,17 @@ impl App {
                     ///
                     ///
                     Action::ReceiveEvent(ref event) => {
-
-
+                        log::info!("Action::ReceiveEvent");
                         log::info!("Got nostr event: {event:?}");
-
-
+                        //async entrypoint
+                        //slows down app
+                        //no Self::sleep_then_print(0).await;
                     }
                     ///
                     ///
                     ///
                     Action::SendReaction((id, pubkey)) => {
+                        log::info!("Action::SendReaction");
                         let event = EventBuilder::new_reaction(id, pubkey, "+").to_event(&keys)?;
                         log::info!("Send reaction: {event:?}");
                         event_tx.send(event)?;
@@ -194,6 +194,7 @@ impl App {
                         action_tx.send(Action::SystemMessage(format!(" [Liked] {note1}")))?;
                     }
                     Action::SendRepost((id, pubkey)) => {
+                        log::info!("Action::SendRepost");
                         let event = EventBuilder::repost(id, pubkey).to_event(&keys)?;
                         log::info!("Send repost: {event:?}");
                         event_tx.send(event)?;
@@ -204,14 +205,13 @@ impl App {
                     ///
                     ///
                     Action::SendTextNote(ref content, ref tags) => {
-
+                        log::info!("Action::SendTextNote");
 
                         let event = EventBuilder::new_text_note(content, tags.iter().cloned())
                             .to_event(&keys)?;
                         log::info!("Send text note: {event:?}");
                         event_tx.send(event)?;
                         action_tx.send(Action::SystemMessage(format!(" [Posted] {content}")))?;
-
 
                     }
                     ///
@@ -221,6 +221,7 @@ impl App {
                 }
                 for component in self.components.iter_mut() {
                     if let Some(action) = component.update(action.clone())? {
+                        log::info!("action_tx.send");
                         action_tx.send(action)?
                     };
                 }
