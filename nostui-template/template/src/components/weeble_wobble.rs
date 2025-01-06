@@ -6,7 +6,13 @@ use ratatui::{prelude::*, widgets::*};
 use super::Component;
 use crate::{action::Action, tui::Frame};
 
-#[derive(Debug, Clone, PartialEq)]
+use tokio::{
+    sync::mpsc::{self, UnboundedReceiver, UnboundedSender},
+    task::JoinHandle,
+};
+use tokio_util::sync::CancellationToken;
+
+#[derive(Debug)]
 pub struct WeebleWobble {
     app_start_time: Instant,
     app_frames: u32,
@@ -18,6 +24,7 @@ pub struct WeebleWobble {
     weeble: String,
     blockheight: String,
     wobble: String,
+    task: JoinHandle<()>,
 }
 
 impl Default for WeebleWobble {
@@ -28,6 +35,7 @@ impl Default for WeebleWobble {
 
 impl WeebleWobble {
     pub fn new() -> Self {
+        let task = tokio::spawn(async {});
         Self {
             app_start_time: Instant::now(),
             app_frames: 0,
@@ -38,6 +46,7 @@ impl WeebleWobble {
             weeble: String::from(""),
             blockheight: String::from(""),
             wobble: String::from(""),
+            task,
         }
     }
 
