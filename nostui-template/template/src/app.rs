@@ -103,7 +103,9 @@ impl App {
         let (mut req_rx, event_tx, terminate_tx, conn_wrapper) = ConnectionProcess::new(conn)?;
         conn_wrapper.run();
 
-        self.task = tokio::spawn(async move {});
+        self.task = tokio::spawn(async move {
+            Self::app_async_entrypoint(5).await;
+        });
         loop {
         //no Self::app_async_entrypoint(0).await;
             if let Some(e) = tui.next().await {
