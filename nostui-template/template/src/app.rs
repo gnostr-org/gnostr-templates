@@ -3,7 +3,7 @@ use crossterm::event::KeyEvent;
 use nostr_sdk::prelude::*;
 use ratatui::prelude::Rect;
 use tokio::sync::mpsc;
-
+use tokio::time::Duration;
 use crate::{
     action::Action,
     components::{Component, FpsCounter, WeebleWobble, Home, StatusBar},
@@ -51,6 +51,18 @@ impl App {
         })
     }
 
+
+     async fn sleep_then_print(timer: i32) {
+         println!("Start timer {}.", timer);
+         log::info!(">>>>>----------->>>Start timer {}.", timer);
+
+         // No .await here!
+         std::thread::sleep(Duration::from_secs(1));
+
+         println!("Timer {} done.", timer);
+         log::info!(">>>>>----------->>>Timer {} done.", timer);
+     }
+
     //async
     pub async fn run(&mut self) -> Result<()> {
         let (action_tx, mut action_rx) = mpsc::unbounded_channel();
@@ -91,6 +103,9 @@ impl App {
                         if let Some(keymap) = self.config.keybindings.get(&self.mode) {
                             if let Some(action) = keymap.get(&vec![key]) {
                                 log::info!("Got action: {action:?}");
+                                Self::sleep_then_print(10).await;
+                                Self::sleep_then_print(20).await;
+                                Self::sleep_then_print(30).await;
                                 action_tx.send(action.clone())?;
                             } else {
                                 // If the key was not handled as a single key action,
