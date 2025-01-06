@@ -64,6 +64,19 @@ impl App {
     }
 
      async fn app_async_entrypoint(timer: i32) {
+         let TASKS_LIMIT = 3;
+         let semaphore = Arc::new(Semaphore::new(TASKS_LIMIT));
+
+         for count in 0..5 {
+             let permit = semaphore.clone().acquire_owned().await.unwrap();
+             tokio::spawn(async move {
+             log::info!("app_async_entrypoint:{} inner start {}", timer, count);
+             std::thread::sleep(Duration::from_secs(0));
+             log::info!("app_async_entrypoint:{} inner finish {}", timer, count);
+             drop(permit);
+             });
+         }
+         semaphore.acquire_many(TASKS_LIMIT as u32).await.unwrap();
          log::info!("app_async_entrypoint:{} start", timer);
          std::thread::sleep(Duration::from_secs(0));
          log::info!("app_async_entrypoint:{} finish", timer);
