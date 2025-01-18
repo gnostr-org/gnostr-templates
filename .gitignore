@@ -13,6 +13,7 @@ tui-logger/
 lib/
 multitab-async/
 simple-async/
+simple-async-tabs/
 simple/
 user-input/
 wasm-pack/

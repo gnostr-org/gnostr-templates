@@ -6695,6 +6695,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "simple-async-tabs"
+version = "0.1.0"
+dependencies = [
+ "color-eyre",
+ "crossterm 0.28.1",
+ "futures 0.3.31",
+ "ratatui 0.29.0",
+ "strum 0.26.3",
+ "tokio 1.42.0",
+]
+
+[[package]]
 name = "simple-dns"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

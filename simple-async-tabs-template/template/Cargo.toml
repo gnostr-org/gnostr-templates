@@ -1,8 +1,7 @@
-[workspace]
 [package]
-name = "simple-async"
+name = "{{project-name}}"
 version = "0.1.0"
-authors = ["@RandyMcMillan <randy.lee.mcmillan@gmail.com>"]
+authors = ["{{authors}}"]
 license = "MIT"
 edition = "2021"
 

@@ -9,6 +9,7 @@ members = [
     "multitab-async",
     "simple",
     "simple-async",
+    "simple-async-tabs",
     "term",
     "term-pipe",
     "tui-logger",

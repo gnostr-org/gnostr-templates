@@ -37,6 +37,8 @@ install-simple:
     cargo install --force --path simple
 install-simple-async:
     cargo install --force --path simple-async
+install-simple-async-tabs:
+    cargo install --force --path simple-async-tabs
 install-tui-logger:
     cargo install --force --path tui-logger --features crossterm
 install-user-input:
@@ -55,6 +57,7 @@ generate-all:
     just generate-wasm-pack
     just generate-simple
     just generate-simple-async
+    just generate-simple-async-tabs
     just generate-term
     just generate-tui-logger
     just generate-lib
@@ -122,6 +125,12 @@ generate-simple-async:
     rm -rv simple-async
     cargo generate --path ./simple-async-template --name simple-async
     touch simple-async/.gitkeep
+
+generate-simple-async-tabs:
+    mkdir -p simple-async-tabs
+    rm -rv simple-async-tabs
+    cargo generate --path ./simple-async-tabs-template --name simple-async-tabs
+    touch simple-async-tabs/.gitkeep
 
 ## generate-multitab-async:
 ##     mkdir -p multitab-async
