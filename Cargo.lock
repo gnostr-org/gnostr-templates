@@ -5680,6 +5680,7 @@ dependencies = [
  "serde",
  "strum 0.26.3",
  "termion 4.0.3",
+ "time 0.3.37",
  "unicode-segmentation",
  "unicode-truncate",
  "unicode-width 0.2.0",

@@ -1,12 +1,15 @@
 use std::error;
 use crossterm::event::{self, Event, KeyCode};
 use ratatui::prelude::*;
+use ratatui::{
+    style::{Style, Stylize},
+    symbols,
+    widgets::{Block, Tabs},
+};
 use std::process::{Command, Stdio};
 use tokio::process::Command as TokioCommand;
 use tokio::sync::mpsc;
 use tokio::task;
-
-use ratatui::widgets::*;
 
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
@@ -62,8 +65,6 @@ impl Default for App {
             rx_system_top: Option::<mpsc::Receiver::<String>>,
             rx_network_ping: Option::<mpsc::Receiver::<String>>,
             rx_network_netstat: Option::<mpsc::Receiver::<String>>,
-
-
         }
     }
 }
@@ -115,9 +116,29 @@ impl App {
             self.sub_active_tab -= 1;
         }
     }
+    ///// Handles the tick event of the terminal.
     pub fn tick(&mut self) {}
 
-    // ... (Implement functions for running commands and receiving output)
+    /// Set running to false to quit the application.
+    pub fn quit(&mut self) {
+        self.running = false;
+    }
+
+    pub fn increment_counter(&mut self) {
+        if let Some(res) = self.counter.checked_add(1) {
+            self.counter = res;
+        }
+    }
+
+    pub fn decrement_counter(&mut self) {
+        if let Some(res) = self.counter.checked_sub(1) {
+            self.counter = res;
+        }
+    }
+
+
+
+
 }
 
 impl StatefulWidget for App {
@@ -197,24 +218,5 @@ impl StatefulWidget for App {
         };
 
         buf.render_widget(output_block, chunks[1]);
-    }
-    ///// Handles the tick event of the terminal.
-    pub fn tick(&self) {}
-
-    /// Set running to false to quit the application.
-    pub fn quit(&mut self) {
-        self.running = false;
-    }
-
-    pub fn increment_counter(&mut self) {
-        if let Some(res) = self.counter.checked_add(1) {
-            self.counter = res;
-        }
-    }
-
-    pub fn decrement_counter(&mut self) {
-        if let Some(res) = self.counter.checked_sub(1) {
-            self.counter = res;
-        }
     }
 }
