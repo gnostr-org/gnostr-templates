@@ -11,6 +11,7 @@ term/
 term-pipe/
 tui-logger/
 lib/
+multitab-async/
 simple-async/
 simple/
 user-input/

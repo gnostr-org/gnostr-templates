@@ -43,6 +43,8 @@ install-user-input:
     cargo install --force --path user-input
 install-lib:
     cargo install --force --path lib
+install-mutlitab-async:
+    cargo install --force --path multitab-async
 
 generate-all:
     #git stash #--include-untracked -a
@@ -56,6 +58,7 @@ generate-all:
     just generate-term
     just generate-tui-logger
     just generate-lib
+    just generate-multitab-async
     just generate-user-input
     just generate-dumbpipe
     #git stash pop
@@ -120,6 +123,12 @@ generate-simple-async:
     cargo generate --path ./simple-async-template --name simple-async
     touch simple-async/.gitkeep
 
+## generate-multitab-async:
+##     mkdir -p multitab-async
+##     rm -rv multitab-async
+##     cargo generate --path ./multitab-async-template --name simple-async
+##     touch multitab-async/.gitkeep
+
 generate-cli:
     mkdir -p cli
     rm -rv cli
@@ -135,6 +144,13 @@ generate-lib:
         --define project-description="An example generated using the component template" \
         --define use-gitserver=false
     touch lib/.gitkeep
+
+generate-multitab-async:
+    mkdir -p multitab-async
+    rm -rv multitab-async
+    cargo generate --path ./multitab-async-template --name multitab-async \
+        --define project-description="An example generated using the component template"
+    touch multitab-async/.gitkeep
 
 generate-user-input:
     mkdir -p user-input
