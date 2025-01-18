@@ -6,6 +6,7 @@ members = [
     "gnostr-component",
     "gnostr-ui",
     "lib",
+    "multitab-async",
     "simple",
     "simple-async",
     "term",
