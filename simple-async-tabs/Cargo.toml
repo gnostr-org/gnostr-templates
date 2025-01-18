@@ -12,3 +12,4 @@ futures = "0.3.31"
 ratatui = "0.29.0"
 color-eyre = "0.6.3"
 tokio = { version = "1.40.0", features = ["full"] }
+strum = "0.26.3"
