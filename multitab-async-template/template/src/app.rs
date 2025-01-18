@@ -58,10 +58,10 @@ impl Default for App {
             system_top_output: Option::<String>,
             network_ping_output: Option::<String>,
             network_netstat_output: Option::<String>,
-            rx_system_ls: Option<mpsc::Receiver<String>>,
-            rx_system_top: Option<mpsc::Receiver<String>>,
-            rx_network_ping: Option<mpsc::Receiver<String>>,
-            rx_network_netstat: Option<mpsc::Receiver<String>>,
+            rx_system_ls: Option::<mpsc::Receiver::<String>>,
+            rx_system_top: Option::<mpsc::Receiver::<String>>,
+            rx_network_ping: Option::<mpsc::Receiver::<String>>,
+            rx_network_netstat: Option::<mpsc::Receiver::<String>>,
 
 
         }
@@ -123,7 +123,10 @@ impl App {
 impl StatefulWidget for App {
     type State = ();
 
-    fn render(&mut self, area: Rect, buf: &mut Buffer) {
+//note: `render` from trait: `fn(Self, ratatui::layout::Rect, &mut ratatui::buffer::Buffer, &mut <Self as ratatui::prelude::StatefulWidget>::State)`
+
+
+    fn render(&mut self, area: Rect, buf: &mut Buffer, state: &State) {
         let chunks = Layout::default()
             .direction(Direction::Horizontal)
             .constraints([Constraint::Min(20), Constraint::Min(0)])
@@ -195,23 +198,23 @@ impl StatefulWidget for App {
 
         buf.render_widget(output_block, chunks[1]);
     }
-    /// Handles the tick event of the terminal.
-    fn tick(&self) {}
+    ///// Handles the tick event of the terminal.
+    //fn tick(&self) {}
 
-    /// Set running to false to quit the application.
-    fn quit(&mut self) {
-        self.running = false;
-    }
+    ///// Set running to false to quit the application.
+    //fn quit(&mut self) {
+    //    self.running = false;
+    //}
 
-    fn increment_counter(&mut self) {
-        if let Some(res) = self.counter.checked_add(1) {
-            self.counter = res;
-        }
-    }
+    //fn increment_counter(&mut self) {
+    //    if let Some(res) = self.counter.checked_add(1) {
+    //        self.counter = res;
+    //    }
+    //}
 
-   fn decrement_counter(&mut self) {
-        if let Some(res) = self.counter.checked_sub(1) {
-            self.counter = res;
-        }
-    }
+    //fn decrement_counter(&mut self) {
+    //    if let Some(res) = self.counter.checked_sub(1) {
+    //        self.counter = res;
+    //    }
+    //}
 }
