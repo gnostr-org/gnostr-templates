@@ -1,222 +1,346 @@
-use std::error;
-use crossterm::event::{self, Event, KeyCode};
-use ratatui::prelude::*;
-use ratatui::{
-    style::{Style, Stylize},
-    symbols,
-    widgets::{Block, Tabs},
+use rand::{
+    distributions::{Distribution, Uniform},
+    rngs::ThreadRng,
 };
-use std::process::{Command, Stdio};
-use tokio::process::Command as TokioCommand;
-use tokio::sync::mpsc;
-use tokio::task;
+use ratatui::widgets::ListState;
 
-/// Application result type.
-pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
+const TASKS: [&str; 24] = [
+    "Item1", "Item2", "Item3", "Item4", "Item5", "Item6", "Item7", "Item8", "Item9", "Item10",
+    "Item11", "Item12", "Item13", "Item14", "Item15", "Item16", "Item17", "Item18", "Item19",
+    "Item20", "Item21", "Item22", "Item23", "Item24",
+];
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-enum MainTab {
-    System,
-    Network,
+const LOGS: [(&str, &str); 26] = [
+    ("Event1", "INFO"),
+    ("Event2", "INFO"),
+    ("Event3", "CRITICAL"),
+    ("Event4", "ERROR"),
+    ("Event5", "INFO"),
+    ("Event6", "INFO"),
+    ("Event7", "WARNING"),
+    ("Event8", "INFO"),
+    ("Event9", "INFO"),
+    ("Event10", "INFO"),
+    ("Event11", "CRITICAL"),
+    ("Event12", "INFO"),
+    ("Event13", "INFO"),
+    ("Event14", "INFO"),
+    ("Event15", "INFO"),
+    ("Event16", "INFO"),
+    ("Event17", "ERROR"),
+    ("Event18", "ERROR"),
+    ("Event19", "INFO"),
+    ("Event20", "INFO"),
+    ("Event21", "WARNING"),
+    ("Event22", "INFO"),
+    ("Event23", "INFO"),
+    ("Event24", "WARNING"),
+    ("Event25", "INFO"),
+    ("Event26", "INFO"),
+];
+
+const EVENTS: [(&str, u64); 24] = [
+    ("B1", 9),
+    ("B2", 12),
+    ("B3", 5),
+    ("B4", 8),
+    ("B5", 2),
+    ("B6", 4),
+    ("B7", 5),
+    ("B8", 9),
+    ("B9", 14),
+    ("B10", 15),
+    ("B11", 1),
+    ("B12", 0),
+    ("B13", 4),
+    ("B14", 6),
+    ("B15", 4),
+    ("B16", 6),
+    ("B17", 4),
+    ("B18", 7),
+    ("B19", 13),
+    ("B20", 8),
+    ("B21", 11),
+    ("B22", 9),
+    ("B23", 3),
+    ("B24", 5),
+];
+
+#[derive(Clone)]
+pub struct RandomSignal {
+    distribution: Uniform<u64>,
+    rng: ThreadRng,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-enum SubTab {
-    Ls,
-    Top,
-    Ping,
-    Netstat,
-}
-
-/// Application.
-#[derive(Debug)]
-pub struct App {
-    /// Is the application running?
-    pub running: bool,
-    /// counter
-    pub counter: u8,
-    main_tabs: Vec<MainTab>,
-    main_active_tab: usize,
-    sub_tabs: Vec<SubTab>,
-    sub_active_tab: usize,
-    system_ls_output: Option<String>,
-    system_top_output: Option<String>,
-    network_ping_output: Option<String>,
-    network_netstat_output: Option<String>,
-    rx_system_ls: Option<mpsc::Receiver<String>>,
-    rx_system_top: Option<mpsc::Receiver<String>>,
-    rx_network_ping: Option<mpsc::Receiver<String>>,
-    rx_network_netstat: Option<mpsc::Receiver<String>>,
-}
-impl Default for App {
-    fn default() -> Self {
+impl RandomSignal {
+    pub fn new(lower: u64, upper: u64) -> Self {
         Self {
-            running: true,
-            counter: 0,
-            main_tabs: Vec::<MainTab>,
-            main_active_tab: 0,
-            sub_tabs: Vec::<SubTab>,
-            sub_active_tab: 0,
-            system_ls_output: std::option::Option::None,
-            system_top_output: std::option::Option::None,
-            network_ping_output: std::option::Option::None,
-            network_netstat_output: std::option::Option::None,
-            rx_system_ls: Option::<mpsc::Receiver::<String>>,
-            rx_system_top: Option::<mpsc::Receiver::<String>>,
-            rx_network_ping: Option::<mpsc::Receiver::<String>>,
-            rx_network_netstat: Option::<mpsc::Receiver::<String>>,
+            distribution: Uniform::new(lower, upper),
+            rng: rand::thread_rng(),
         }
     }
 }
 
-impl App {
-    /// Constructs a new instance of [`App`].
-    pub fn default() -> Self {
-        Self::default()
+impl Iterator for RandomSignal {
+    type Item = u64;
+    fn next(&mut self) -> Option<u64> {
+        Some(self.distribution.sample(&mut self.rng))
     }
-    pub fn new() -> Self {
+}
+
+#[derive(Clone)]
+pub struct SinSignal {
+    x: f64,
+    interval: f64,
+    period: f64,
+    scale: f64,
+}
+
+impl SinSignal {
+    pub const fn new(interval: f64, period: f64, scale: f64) -> Self {
         Self {
-            running: bool,
-            counter: i32,
-            main_tabs: vec![MainTab::System, MainTab::Network],
-            main_active_tab: 0,
-            sub_tabs: vec![SubTab::Ls, SubTab::Top],
-            sub_active_tab: 0,
-            system_ls_output: None,
-            system_top_output: None,
-            network_ping_output: None,
-            network_netstat_output: None,
-            rx_system_ls: None,
-            rx_system_top: None,
-            rx_network_ping: None,
-            rx_network_netstat: None,
+            x: 0.0,
+            interval,
+            period,
+            scale,
         }
     }
-
-    pub fn next_main_tab(&mut self) {
-        self.main_active_tab = (self.main_active_tab + 1) % self.main_tabs.len();
-    }
-
-    pub fn prev_main_tab(&mut self) {
-        if self.main_active_tab == 0 {
-            self.main_active_tab = self.main_tabs.len() - 1;
-        } else {
-            self.main_active_tab -= 1;
-        }
-    }
-
-    pub fn next_sub_tab(&mut self) {
-        self.sub_active_tab = (self.sub_active_tab + 1) % self.sub_tabs.len();
-    }
-
-    pub fn prev_sub_tab(&mut self) {
-        if self.sub_active_tab == 0 {
-            self.sub_active_tab = self.sub_tabs.len() - 1;
-        } else {
-            self.sub_active_tab -= 1;
-        }
-    }
-    ///// Handles the tick event of the terminal.
-    pub fn tick(&mut self) {}
-
-    /// Set running to false to quit the application.
-    pub fn quit(&mut self) {
-        self.running = false;
-    }
-
-    pub fn increment_counter(&mut self) {
-        if let Some(res) = self.counter.checked_add(1) {
-            self.counter = res;
-        }
-    }
-
-    pub fn decrement_counter(&mut self) {
-        if let Some(res) = self.counter.checked_sub(1) {
-            self.counter = res;
-        }
-    }
-
-
-
-
 }
 
-impl StatefulWidget for App {
-    type State = ();
+impl Iterator for SinSignal {
+    type Item = (f64, f64);
+    fn next(&mut self) -> Option<Self::Item> {
+        let point = (self.x, (self.x * 1.0 / self.period).sin() * self.scale);
+        self.x += self.interval;
+        Some(point)
+    }
+}
 
-//note: `render` from trait: `fn(Self, ratatui::layout::Rect, &mut ratatui::buffer::Buffer, &mut <Self as ratatui::prelude::StatefulWidget>::State)`
+pub struct TabsState<'a> {
+    pub titles: Vec<&'a str>,
+    pub index: usize,
+}
 
+impl<'a> TabsState<'a> {
+    pub const fn new(titles: Vec<&'a str>) -> Self {
+        Self { titles, index: 0 }
+    }
+    pub fn next(&mut self) {
+        self.index = (self.index + 1) % self.titles.len();
+    }
 
-    fn render(&mut self, area: Rect, buf: &mut Buffer, state: &State) {
-        let chunks = Layout::default()
-            .direction(Direction::Horizontal)
-            .constraints([Constraint::Min(20), Constraint::Min(0)])
-            .split(area);
+    pub fn previous(&mut self) {
+        if self.index > 0 {
+            self.index -= 1;
+        } else {
+            self.index = self.titles.len() - 1;
+        }
+    }
+}
 
-        // Render main tabs
-        let main_tab_titles = self
-            .main_tabs
-            .iter()
-            .enumerate()
-            .map(|(i, t)| {
-                let style = if i == self.main_active_tab {
-                    Style::default().fg(Color::Yellow)
+pub struct StatefulList<T> {
+    pub state: ListState,
+    pub items: Vec<T>,
+}
+
+impl<T> StatefulList<T> {
+    pub fn with_items(items: Vec<T>) -> Self {
+        Self {
+            state: ListState::default(),
+            items,
+        }
+    }
+
+    pub fn next(&mut self) {
+        let i = match self.state.selected() {
+            Some(i) => {
+                if i >= self.items.len() - 1 {
+                    0
                 } else {
-                    Style::default()
-                };
-                Span::styled(format!("{:?}", t), style)
-            })
-            .collect::<Vec<_>>();
-
-        let main_tab_bar = TabBar::new(main_tab_titles)
-            .block(Block::default().borders(Borders::ALL))
-            .highlight_style(Style::default().bg(Color::DarkGray))
-            .select(self.main_active_tab);
-
-        buf.render_widget(main_tab_bar, chunks[0]);
-
-        // Render sub tabs
-        let sub_tab_titles = self
-            .sub_tabs
-            .iter()
-            .enumerate()
-            .map(|(i, t)| {
-                let style = if i == self.sub_active_tab {
-                    Style::default().fg(Color::Yellow)
-                } else {
-                    Style::default()
-                };
-                Span::styled(format!("{:?}", t), style)
-            })
-            .collect::<Vec<_>>();
-
-        let sub_tab_bar = TabBar::new(sub_tab_titles)
-            .block(Block::default().borders(Borders::ALL))
-            .highlight_style(Style::default().bg(Color::DarkGray))
-            .select(self.sub_active_tab);
-
-        buf.render_widget(sub_tab_bar, chunks[1]);
-
-        // Render output based on active tabs
-        let output_block = match self.main_tabs[self.main_active_tab] {
-            MainTab::System => match self.sub_tabs[self.sub_active_tab] {
-                SubTab::Ls => {
-                    // ... (Handle system_ls_output and receive updates)
+                    i + 1
                 }
-                SubTab::Top => {
-                    // ... (Handle system_top_output and receive updates)
-                }
-            },
-            MainTab::Network => match self.sub_tabs[self.sub_active_tab] {
-                SubTab::Ping => {
-                    // ... (Handle network_ping_output and receive updates)
-                }
-                SubTab::Netstat => {
-                    // ... (Handle network_netstat_output and receive updates)
-                }
-            },
+            }
+            None => 0,
         };
+        self.state.select(Some(i));
+    }
 
-        buf.render_widget(output_block, chunks[1]);
+    pub fn previous(&mut self) {
+        let i = match self.state.selected() {
+            Some(i) => {
+                if i == 0 {
+                    self.items.len() - 1
+                } else {
+                    i - 1
+                }
+            }
+            None => 0,
+        };
+        self.state.select(Some(i));
+    }
+}
+
+pub struct Signal<S: Iterator> {
+    source: S,
+    pub points: Vec<S::Item>,
+    tick_rate: usize,
+}
+
+impl<S> Signal<S>
+where
+    S: Iterator,
+{
+    fn on_tick(&mut self) {
+        self.points.drain(0..self.tick_rate);
+        self.points
+            .extend(self.source.by_ref().take(self.tick_rate));
+    }
+}
+
+pub struct Signals {
+    pub sin1: Signal<SinSignal>,
+    pub sin2: Signal<SinSignal>,
+    pub window: [f64; 2],
+}
+
+impl Signals {
+    fn on_tick(&mut self) {
+        self.sin1.on_tick();
+        self.sin2.on_tick();
+        self.window[0] += 1.0;
+        self.window[1] += 1.0;
+    }
+}
+
+pub struct Server<'a> {
+    pub name: &'a str,
+    pub location: &'a str,
+    pub coords: (f64, f64),
+    pub status: &'a str,
+}
+
+pub struct App<'a> {
+    pub title: &'a str,
+    pub should_quit: bool,
+    pub tabs: TabsState<'a>,
+    pub show_chart: bool,
+    pub progress: f64,
+    pub sparkline: Signal<RandomSignal>,
+    pub tasks: StatefulList<&'a str>,
+    pub logs: StatefulList<(&'a str, &'a str)>,
+    pub signals: Signals,
+    pub barchart: Vec<(&'a str, u64)>,
+    pub servers: Vec<Server<'a>>,
+    pub enhanced_graphics: bool,
+}
+
+impl<'a> App<'a> {
+    pub fn new(title: &'a str, enhanced_graphics: bool) -> Self {
+        let mut rand_signal = RandomSignal::new(0, 100);
+        let sparkline_points = rand_signal.by_ref().take(300).collect();
+        let mut sin_signal = SinSignal::new(0.2, 3.0, 18.0);
+        let sin1_points = sin_signal.by_ref().take(100).collect();
+        let mut sin_signal2 = SinSignal::new(0.1, 2.0, 10.0);
+        let sin2_points = sin_signal2.by_ref().take(200).collect();
+        App {
+            title,
+            should_quit: false,
+            tabs: TabsState::new(vec!["Tab0", "Tab1", "Tab2"]),
+            show_chart: true,
+            progress: 0.0,
+            sparkline: Signal {
+                source: rand_signal,
+                points: sparkline_points,
+                tick_rate: 1,
+            },
+            tasks: StatefulList::with_items(TASKS.to_vec()),
+            logs: StatefulList::with_items(LOGS.to_vec()),
+            signals: Signals {
+                sin1: Signal {
+                    source: sin_signal,
+                    points: sin1_points,
+                    tick_rate: 5,
+                },
+                sin2: Signal {
+                    source: sin_signal2,
+                    points: sin2_points,
+                    tick_rate: 10,
+                },
+                window: [0.0, 20.0],
+            },
+            barchart: EVENTS.to_vec(),
+            servers: vec![
+                Server {
+                    name: "NorthAmerica-1",
+                    location: "New York City",
+                    coords: (40.71, -74.00),
+                    status: "Up",
+                },
+                Server {
+                    name: "Europe-1",
+                    location: "Paris",
+                    coords: (48.85, 2.35),
+                    status: "Failure",
+                },
+                Server {
+                    name: "SouthAmerica-1",
+                    location: "São Paulo",
+                    coords: (-23.54, -46.62),
+                    status: "Up",
+                },
+                Server {
+                    name: "Asia-1",
+                    location: "Singapore",
+                    coords: (1.35, 103.86),
+                    status: "Up",
+                },
+            ],
+            enhanced_graphics,
+        }
+    }
+
+    pub fn on_up(&mut self) {
+        self.tasks.previous();
+    }
+
+    pub fn on_down(&mut self) {
+        self.tasks.next();
+    }
+
+    pub fn on_right(&mut self) {
+        self.tabs.next();
+    }
+
+    pub fn on_left(&mut self) {
+        self.tabs.previous();
+    }
+
+    pub fn on_key(&mut self, c: char) {
+        match c {
+            'q' => {
+                self.should_quit = true;
+            }
+            't' => {
+                self.show_chart = !self.show_chart;
+            }
+            _ => {}
+        }
+    }
+
+    pub fn on_tick(&mut self) {
+        // Update progress
+        self.progress += 0.001;
+        if self.progress > 1.0 {
+            self.progress = 0.0;
+        }
+
+        self.sparkline.on_tick();
+        self.signals.on_tick();
+
+        let log = self.logs.items.pop().unwrap();
+        self.logs.items.insert(0, log);
+
+        let event = self.barchart.pop().unwrap();
+        self.barchart.insert(0, event);
     }
 }
