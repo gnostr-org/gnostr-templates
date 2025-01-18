@@ -54,10 +54,10 @@ impl Default for App {
             main_active_tab: 0,
             sub_tabs: Vec::<SubTab>,
             sub_active_tab: 0,
-            system_ls_output: Option::<String>,
-            system_top_output: Option::<String>,
-            network_ping_output: Option::<String>,
-            network_netstat_output: Option::<String>,
+            system_ls_output: std::option::Option::None,
+            system_top_output: std::option::Option::None,
+            network_ping_output: std::option::Option::None,
+            network_netstat_output: std::option::Option::None,
             rx_system_ls: Option::<mpsc::Receiver::<String>>,
             rx_system_top: Option::<mpsc::Receiver::<String>>,
             rx_network_ping: Option::<mpsc::Receiver::<String>>,
@@ -199,22 +199,22 @@ impl StatefulWidget for App {
         buf.render_widget(output_block, chunks[1]);
     }
     ///// Handles the tick event of the terminal.
-    //fn tick(&self) {}
+    pub fn tick(&self) {}
 
-    ///// Set running to false to quit the application.
-    //fn quit(&mut self) {
-    //    self.running = false;
-    //}
+    /// Set running to false to quit the application.
+    pub fn quit(&mut self) {
+        self.running = false;
+    }
 
-    //fn increment_counter(&mut self) {
-    //    if let Some(res) = self.counter.checked_add(1) {
-    //        self.counter = res;
-    //    }
-    //}
+    pub fn increment_counter(&mut self) {
+        if let Some(res) = self.counter.checked_add(1) {
+            self.counter = res;
+        }
+    }
 
-    //fn decrement_counter(&mut self) {
-    //    if let Some(res) = self.counter.checked_sub(1) {
-    //        self.counter = res;
-    //    }
-    //}
+    pub fn decrement_counter(&mut self) {
+        if let Some(res) = self.counter.checked_sub(1) {
+            self.counter = res;
+        }
+    }
 }
