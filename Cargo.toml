@@ -15,7 +15,7 @@ members = [
     "tui-crb",
     "tui-logger",
     "user-input",
-    #"wasm-pack",
+    "wasm-pack",
 ]
 exclude = [
     "cli-template",
