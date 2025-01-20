@@ -277,7 +277,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3716c0d3970fe92d79a8f4cda2caf91113574505dff5b18e455e549d4b078e98"
 dependencies = [
  "futures-util",
- "gloo-timers",
+ "gloo-timers 0.2.6",
  "tokio 1.42.0",
  "wasm-bindgen-futures",
 ]
@@ -905,7 +905,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68578f196d2a33ff61b27fae256c3164f65e36382648e30666dde05b8cc9dfdf"
 dependencies = [
  "async-trait",
- "convert_case",
+ "convert_case 0.6.0",
  "json5",
  "nom",
  "pathdiff",
@@ -970,6 +970,12 @@ name = "constant_time_eq"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
+
+[[package]]
+name = "convert_case"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6245d59a3e82a7fc217c5828a6692dbc6dfb63a0c8c90495621f7b9d79704a0e"
 
 [[package]]
 name = "convert_case"
@@ -1041,6 +1047,116 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "16b80225097f2e5ae4e7179dd2266824648f3e2f49d9134d584b76389d31c4c3"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "crb"
+version = "0.0.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c03d01f389aa14fc00b6817bbcccee19799820a7e6a729ce98a41be9b86ac54d"
+dependencies = [
+ "crb-agent",
+ "crb-core",
+ "crb-pipeline",
+ "crb-runtime",
+ "crb-send",
+ "crb-superagent",
+]
+
+[[package]]
+name = "crb-agent"
+version = "0.0.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b2594a119510cb42b309f8b3f1562d957c466ba0d9e9c4dda379771d7adeadd1"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "crb-core",
+ "crb-runtime",
+ "crb-send",
+ "derive_more 1.0.0",
+ "futures 0.3.31",
+ "log",
+ "tokio 1.42.0",
+]
+
+[[package]]
+name = "crb-core"
+version = "0.0.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e75191cf3f861c3d5e565b1bb1ab83863196d7513346e7ac5a8d77e996e16906"
+dependencies = [
+ "anyhow",
+ "derive_more 1.0.0",
+ "event-listener 5.4.0",
+ "futures 0.3.31",
+ "gloo-timers 0.3.0",
+ "js-sys",
+ "ordered-float",
+ "thiserror 2.0.9",
+ "tokio 1.42.0",
+ "uuid 1.11.0",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
+name = "crb-pipeline"
+version = "0.0.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0bd9457cf4299bafbc72faf1e11853d4edf6f01ac28e435f80b3845a283d468c"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "crb-agent",
+ "crb-core",
+ "crb-runtime",
+ "crb-superagent",
+ "derive_more 1.0.0",
+ "log",
+ "typedmap",
+]
+
+[[package]]
+name = "crb-runtime"
+version = "0.0.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d5fcbd78c6e8eac88d22b51d54c6772514e298ff91e0568ab7b9b1606a39eff9"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "crb-core",
+ "derive_more 1.0.0",
+ "futures 0.3.31",
+ "thiserror 2.0.9",
+]
+
+[[package]]
+name = "crb-send"
+version = "0.0.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5290d09bc1651b3deb4ee7d54bf9620e5ee31f02335b81db3ee8ff13f6a533e"
+dependencies = [
+ "anyhow",
+]
+
+[[package]]
+name = "crb-superagent"
+version = "0.0.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5ab07dfabb397326d68f5c13911d419528c536051dbcc0443e2cd3f164ea3872"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "crb-agent",
+ "crb-core",
+ "crb-runtime",
+ "crb-send",
+ "derive_more 1.0.0",
+ "futures 0.3.31",
+ "log",
+ "thiserror 2.0.9",
+ "typed-slab",
 ]
 
 [[package]]
@@ -1322,6 +1438,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "dashmap"
+version = "6.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5041cc499144891f3790297212f32a74fb938e5136a14943f338ef9e0ae276cf"
+dependencies = [
+ "cfg-if 1.0.0",
+ "crossbeam-utils 0.8.21",
+ "hashbrown 0.14.5",
+ "lock_api 0.4.12",
+ "once_cell",
+ "parking_lot_core 0.9.10",
+]
+
+[[package]]
 name = "data-encoding"
 version = "2.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1417,6 +1547,19 @@ dependencies = [
 
 [[package]]
 name = "derive_more"
+version = "0.99.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5f33878137e4dafd7fa914ad4e259e18a4e8e532b9617a2d0150262bf53abfce"
+dependencies = [
+ "convert_case 0.4.0",
+ "proc-macro2",
+ "quote",
+ "rustc_version 0.4.1",
+ "syn 2.0.95",
+]
+
+[[package]]
+name = "derive_more"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4a9b99b9cbbe49445b21764dc0625032a89b145a2642e67603e1c936f5458d05"
@@ -1430,6 +1573,7 @@ version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cb7330aeadfbe296029522e6c40f315320aba36fc43a5b3632f3795348f3bd22"
 dependencies = [
+ "convert_case 0.6.0",
  "proc-macro2",
  "quote",
  "syn 2.0.95",
@@ -1776,6 +1920,17 @@ name = "event-listener"
 version = "4.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "67b215c49b2b248c855fb73579eb1f4f26c38ffdc12973e20e07b91d78d5646e"
+dependencies = [
+ "concurrent-queue",
+ "parking",
+ "pin-project-lite",
+]
+
+[[package]]
+name = "event-listener"
+version = "5.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3492acde4c3fc54c845eaab3eed8bd00c7a7d881f78bfc801e43a93dec1331ae"
 dependencies = [
  "concurrent-queue",
  "parking",
@@ -2731,6 +2886,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "gloo-timers"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbb143cf96099802033e0d4f4963b19fd2e0b728bcf076cd9cf7f6634f092994"
+dependencies = [
+ "futures-channel",
+ "futures-core",
+ "js-sys",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "gnostr-component"
 version = "0.1.0"
 dependencies = [
@@ -2820,7 +2987,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68a7f542ee6b35af73b06abc0dad1c1bae89964e4e253bc4b587b91c9637867b"
 dependencies = [
  "cfg-if 1.0.0",
- "dashmap",
+ "dashmap 5.5.3",
  "futures 0.3.31",
  "futures-timer",
  "no-std-compat",
@@ -3682,7 +3849,7 @@ dependencies = [
  "anyhow",
  "crypto_box",
  "data-encoding",
- "derive_more",
+ "derive_more 1.0.0",
  "ed25519-dalek",
  "getrandom",
  "hex",
@@ -3745,7 +3912,7 @@ dependencies = [
  "base64 0.22.1",
  "bytes 1.9.0",
  "der",
- "derive_more",
+ "derive_more 1.0.0",
  "duct",
  "futures-buffered",
  "futures-concurrency",
@@ -4830,6 +4997,15 @@ name = "option-ext"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04744f49eae99ab78e0d5c0b603ab218f515ea8cfe5a456d7629ad883a3b6e7d"
+
+[[package]]
+name = "ordered-float"
+version = "4.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7bb71e1b3fa6ca1c61f383464aaf2bb0e2f8e772a1f01d486832464de363b951"
+dependencies = [
+ "num-traits",
+]
 
 [[package]]
 name = "ordered-multimap"
@@ -5962,6 +6138,7 @@ dependencies = [
  "base64 0.22.1",
  "bytes 1.9.0",
  "encoding_rs",
+ "futures-channel",
  "futures-core",
  "futures-util",
  "h2 0.4.7",
@@ -6527,9 +6704,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.134"
+version = "1.0.137"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d00f4175c42ee48b15416f6193a959ba3a0d67fc699a0db9ad12df9f83991c7d"
+checksum = "930cfb6e6abf99298aaad7d29abbef7a9999a9a8806a40088f55f0dcec03146b"
 dependencies = [
  "itoa 1.0.14",
  "memchr",
@@ -7797,6 +7974,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "tui-crb"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "crb",
+ "crossterm 0.28.1",
+ "ratatui 0.29.0",
+ "reqwest 0.12.12",
+ "serde_json",
+ "tokio 1.42.0",
+]
+
+[[package]]
 name = "tui-logger"
 version = "0.14.1"
 dependencies = [
@@ -7862,6 +8053,25 @@ dependencies = [
  "thiserror 1.0.69",
  "url 2.5.4",
  "utf-8",
+]
+
+[[package]]
+name = "typed-slab"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "83a642c7ed943babed2ba8681bf96321c557ffc1d68a52a510c64e270f36119a"
+dependencies = [
+ "derive_more 0.99.18",
+ "slab",
+]
+
+[[package]]
+name = "typedmap"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "63278e72ed4f207eb3216c944cbafb35bdb656d2eab97ef73c0c165a1cd3e319"
+dependencies = [
+ "dashmap 6.1.0",
 ]
 
 [[package]]
@@ -8068,6 +8278,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8c5f0a0af699448548ad1a2fbf920fb4bee257eae39953ba95cb84891a0446a"
 dependencies = [
  "getrandom",
+ "serde",
+ "sha1_smol",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -8321,7 +8534,7 @@ version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "45b42a2f611916b5965120a9cde2b60f2db4454826dd9ad5e6f47c24a5b3b259"
 dependencies = [
- "event-listener",
+ "event-listener 4.0.3",
  "futures-util",
  "parking_lot 0.12.3",
  "thiserror 1.0.69",
