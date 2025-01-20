@@ -22,12 +22,13 @@ build-all-release: generate-all
     #cargo b -r --bin tui-logger --features crossterm --manifest-path tui-logger/Cargo.toml
     cargo b -r --features crossterm
 
-install-all: build-all-release install-cli install-component install-dumbpipe install-gnostr-ui install-term install-simple install-simple-async
-install-simple-async-tabs install-tui-logger install-user-input install-lib
+install-all: build-all-release install-cli install-component install-dumbpipe install-gnostr-ui install-term install-simple install-simple-async install-simple-async-tabs install-tui-logger install-user-input install-lib
 install-cli:
     cargo install --force --path cli
 install-component:
     cargo install --force --path component
+install-tui-crb:
+    cargo install --force --path tui-crb
 install-dumbpipe:
     cargo install --force --path dumbpipe
 install-gnostr-ui:
@@ -53,6 +54,7 @@ generate-all:
     #git stash #--include-untracked -a
     just generate-cli
     just gnostr-component
+    just generate-tui-crb
     just generate-nostui
     just generate-component
     just generate-wasm-pack
@@ -93,6 +95,15 @@ generate-component:
         --define project-description="An example generated using the component template" \
         --define use-gitserver=false
     touch component/.gitkeep
+
+generate-tui-crb:
+    mkdir -p tui-crb
+    rm -rv tui-crb
+    cargo generate --path ./tui-crb-template \
+        --name tui-crb \
+        --define project-description="An example generated using the component template" \
+        --define use-gitserver=false
+    touch tui-crb/.gitkeep
 
 generate-wasm-pack:
     mkdir -p wasm-pack
