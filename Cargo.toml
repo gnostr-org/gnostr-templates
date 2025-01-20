@@ -12,6 +12,7 @@ members = [
     "simple-async-tabs",
     "term",
     "term-pipe",
+    "tui-crb",
     "tui-logger",
     "user-input",
     "wasm-pack",
@@ -27,6 +28,7 @@ exclude = [
     "simple-async-template",
     "simple-template",
     "term-template",
+    "tui-crb-template",
     "user-input-template",
     "wasm-pack",
 ]
