@@ -215,7 +215,7 @@ pub async fn copy_from_quinn(
 ///
 /// Print the secret key to stderr if it was generated, so the user can save it.
 pub fn get_or_create_secret() -> anyhow::Result<SecretKey> {
-    match std::env::var("IROH_SECRET") {
+    match std::env::var("GNOSTR_SECRET") {
         Ok(secret) => SecretKey::from_str(&secret).context("invalid secret"),
         Err(_) => {
             let key = SecretKey::generate();
