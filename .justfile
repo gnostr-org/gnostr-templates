@@ -29,7 +29,7 @@ install-component:
     cargo install --force --path component
 install-dumbpipe:
     cargo install --force --path dumbpipe
-install-gnostr-ui:
+install-gnostr-ui: generate-nostui
     cargo install --force --path gnostr-ui
 install-term:
     cargo install --force --path term
