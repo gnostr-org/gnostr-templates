@@ -211,33 +211,41 @@ impl App {
                 for component in self.components.iter_mut() {
                     if let Some(action) = component.handle_events(Some(e.clone()))? {
                         action_tx.send(action)?;
+                        //
                         self.task = tokio::spawn(async move {
                             Self::app_async_entrypoint(0).await;
                         });
+                        //
                     }
                 }
             }
 
             while let Ok(event) = req_rx.try_recv() {
                 action_tx.send(Action::ReceiveEvent(event))?;
+                        //
                         self.task = tokio::spawn(async move {
-                            Self::app_async_entrypoint(1).await;
+                            Self::app_async_entrypoint(0).await;
                         });
+                        //
             }
 
             while let Ok(action) = action_rx.try_recv() {
                 if action != Action::Tick && action != Action::Render {
                     log::debug!("{action:?}");
-                        //self.task = tokio::spawn(async move {
-                        //    Self::app_async_entrypoint(2).await;
-                        //});
+                        //
+                        self.task = tokio::spawn(async move {
+                            Self::app_async_entrypoint(0).await;
+                        });
+                        //
                 }
                 match action {
                     Action::Tick => {
                         self.last_tick_key_events.drain(..);
-                        //self.task = tokio::spawn(async move {
-                        //    Self::app_async_entrypoint(3).await;
-                        //});
+                        //
+                        self.task = tokio::spawn(async move {
+                            Self::app_async_entrypoint(0).await;
+                        });
+                        //
                     }
                     Action::Quit => self.should_quit = true,
                     Action::Suspend => self.should_suspend = true,
