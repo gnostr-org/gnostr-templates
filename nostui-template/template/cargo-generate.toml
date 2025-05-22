@@ -3,3 +3,30 @@ pre = ["./hooks/pre-get-repository.rhai"]
 
 [template]
 cargo_generate_version = ">=0.10.0"
+
+ignore = [
+"book/snippets/kotlin/gradle/wrapper/gradle-wrapper.jar",
+"book/src/changelog.md",
+"book/src/license.md",
+"book/src/sdk/event/id.md",
+"book/src/sdk/event/index.md",
+"book/src/sdk/event/kind.md",
+"book/src/sdk/event/tag.md",
+"book/src/sdk/hello.md",
+"book/src/sdk/messages/client.md",
+"book/src/sdk/messages/filters.md",
+"book/src/sdk/messages/relay.md",
+"book/src/sdk/nips/01.md",
+"book/src/sdk/nips/05.md",
+"book/src/sdk/nips/06.md",
+"book/src/sdk/nips/17.md",
+"book/src/sdk/nips/19.md",
+"book/src/sdk/nips/21.md",
+"book/src/sdk/nips/44.md",
+"book/src/sdk/nips/47.md",
+"book/src/sdk/nips/59.md",
+"book/src/sdk/nips/65.md",
+"book/src/sdk/signers/keys.md",
+"screenshot.gif",
+"src/utils.rs"
+]
