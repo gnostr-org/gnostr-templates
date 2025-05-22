@@ -10,12 +10,15 @@ use tokio::{
 };
 use tokio_util::sync::CancellationToken;
 
+use std::fs::File;
+use std::io;
+use std::io::Write;
 use std::sync::Arc;
 use tokio::sync::Semaphore;
 
 use crate::{
     action::Action,
-    components::{Component, FpsCounter, WeebleWobble, Home, StatusBar},
+    components::{Component, FpsCounter, Home, StatusBar, WeebleWobble},
     config::Config,
     mode::Mode,
     nostr::Connection,
@@ -53,7 +56,12 @@ impl App {
             //although no text is displayed
             //weeble_wobble ... before fps in this case
             //because they are in the same space
-            components: vec![Box::new(home), Box::new(weeble_wobble), Box::new(status_bar), Box::new(fps)],
+            components: vec![
+                Box::new(home),
+                Box::new(weeble_wobble),
+                Box::new(status_bar),
+                Box::new(fps),
+            ],
             should_quit: false,
             should_suspend: false,
             config,
@@ -63,79 +71,106 @@ impl App {
         })
     }
 
-    async fn async_reqwest() -> Result<(), reqwest::Error> {
+    async fn write_to_file(filename: &str, content: &str) -> io::Result<()> {
+        let mut file = File::create(filename)?;
+        file.write_all(content.as_bytes())?;
+        log::info!("Successfully wrote to '{}'", filename);
+        Ok(())
+    }
+
+    async fn async_reqwest() -> Result<String, reqwest::Error> {
         let url = if let Some(url) = std::env::args().nth(1) {
             url
         } else {
             //log::info!("No CLI URL provided, using default.");
             "https://mempool.space/api/blocks/tip/height".into()
         };
-    
+
         log::info!("Fetching {url:?}");
-    
+
         let res = reqwest::get(url).await?;
         //log::info!("Response: {:?} {}", res.version(), res.status());
         //log::info!("Headers: {:#?}\n", res.headers());
         let body = res.text().await?;
         log::info!("{body}");
-        Ok(())
+        Self::write_to_file(&(body.clone()+".json"), &body).await;
+        Ok(body)
     }
 
-     async fn app_async_entrypoint(timer: i32) {
-         let TASKS_LIMIT = 3;
-         let semaphore = Arc::new(Semaphore::new(TASKS_LIMIT));
+    async fn app_async_entrypoint(timer: i32) {
+        let TASKS_LIMIT = 3;
+        let semaphore = Arc::new(Semaphore::new(TASKS_LIMIT));
 
-         for count in 0..5 {
-             let permit = semaphore.clone().acquire_owned().await.unwrap();
-             tokio::spawn(async move {
-             log::info!("app_async_entrypoint:{} inner start {}", timer, count);
-             std::thread::sleep(Duration::from_secs(0));
-             log::info!("app_async_entrypoint:{} inner finish {}", timer, count);
-             drop(permit);
-             });
-         }
-         semaphore.acquire_many(TASKS_LIMIT as u32).await.unwrap();
-         log::info!("app_async_entrypoint:{} start", timer);
-         std::thread::sleep(Duration::from_secs(0));
-         log::info!("app_async_entrypoint:{} finish", timer);
-     }
-     async fn app_render_async_entrypoint(timer: i32) {
-         //Self::async_reqwest();
-         let TASKS_LIMIT = 3;
-         let semaphore = Arc::new(Semaphore::new(TASKS_LIMIT));
+        for count in 0..5 {
+            let permit = semaphore.clone().acquire_owned().await.unwrap();
+            tokio::spawn(async move {
+                log::info!("app_async_entrypoint:{} inner start {}", timer, count);
+                std::thread::sleep(Duration::from_secs(0));
+                log::info!("app_async_entrypoint:{} inner finish {}", timer, count);
+                drop(permit);
+            });
+        }
+        semaphore.acquire_many(TASKS_LIMIT as u32).await.unwrap();
+        log::info!("app_async_entrypoint:{} start", timer);
+        std::thread::sleep(Duration::from_secs(0));
+        log::info!("app_async_entrypoint:{} finish", timer);
+    }
+    async fn app_render_async_entrypoint(timer: i32) {
+        let req = Self::async_reqwest().await;
+        log::info!("{:?}", req);
+        let TASKS_LIMIT = 3;
+        let semaphore = Arc::new(Semaphore::new(TASKS_LIMIT));
 
-         for count in 0..5 {
-             let permit = semaphore.clone().acquire_owned().await.unwrap();
-             tokio::spawn(async move {
-             log::info!("app_render_async_entrypoint:{} inner start {}", timer, count);
-             std::thread::sleep(Duration::from_secs(0));
-             log::info!("app_render_async_entrypoint:{} inner finish {}", timer, count);
-             drop(permit);
-             });
-         }
-         semaphore.acquire_many(TASKS_LIMIT as u32).await.unwrap();
-         log::info!("app_render_async_entrypoint:{} start", timer);
-         std::thread::sleep(Duration::from_secs(0));
-         //Self::async_reqwest();
-         log::info!("app_render_async_entrypoint:{} finish", timer);
-     }
-     async fn app_nested_async_entrypoint(timer: i32) {
-         let TASKS_LIMIT = 3;
-         let semaphore = Arc::new(Semaphore::new(TASKS_LIMIT));
+        for count in 0..5 {
+            let permit = semaphore.clone().acquire_owned().await.unwrap();
+            tokio::spawn(async move {
+                log::info!(
+                    "app_render_async_entrypoint:{} inner start {}",
+                    timer,
+                    count
+                );
+                std::thread::sleep(Duration::from_secs(0));
+                log::info!(
+                    "app_render_async_entrypoint:{} inner finish {}",
+                    timer,
+                    count
+                );
+                drop(permit);
+            });
+        }
+        semaphore.acquire_many(TASKS_LIMIT as u32).await.unwrap();
+        log::info!("app_render_async_entrypoint:{} start", timer);
+        std::thread::sleep(Duration::from_secs(0));
+        let req = Self::async_reqwest().await;
+        log::info!("{:?}", req);
+        log::info!("app_render_async_entrypoint:{} finish", timer);
+    }
+    async fn app_nested_async_entrypoint(timer: i32) {
+        let TASKS_LIMIT = 3;
+        let semaphore = Arc::new(Semaphore::new(TASKS_LIMIT));
 
-         for count in 0..5 {
-             let permit = semaphore.clone().acquire_owned().await.unwrap();
-             tokio::spawn(async move {
-             log::info!("app_nested_async_entrypoint:{} inner start {}", timer, count);
-             Self::app_async_entrypoint(0);
-             Self::app_render_async_entrypoint(0);
-             //Self::async_reqwest();
-             log::info!("app_nested_async_entrypoint:{} inner finish {}", timer, count);
-             drop(permit);
-             });
-         }
-         semaphore.acquire_many(TASKS_LIMIT as u32).await.unwrap();
-     }
+        for count in 0..5 {
+            let permit = semaphore.clone().acquire_owned().await.unwrap();
+            tokio::spawn(async move {
+                log::info!(
+                    "app_nested_async_entrypoint:{} inner start {}",
+                    timer,
+                    count
+                );
+                Self::app_async_entrypoint(0);
+                Self::app_render_async_entrypoint(0);
+                let req = Self::async_reqwest().await;
+                log::info!("{:?}", req);
+                log::info!(
+                    "app_nested_async_entrypoint:{} inner finish {}",
+                    timer,
+                    count
+                );
+                drop(permit);
+            });
+        }
+        semaphore.acquire_many(TASKS_LIMIT as u32).await.unwrap();
+    }
 
     //async
     pub async fn run(&mut self) -> Result<()> {
@@ -149,17 +184,17 @@ impl App {
         Self::app_async_entrypoint(0).await;
 
         for component in self.components.iter_mut() {
-        Self::app_async_entrypoint(0).await;
+            Self::app_async_entrypoint(0).await;
             component.register_action_handler(action_tx.clone())?;
         }
 
         for component in self.components.iter_mut() {
-        Self::app_async_entrypoint(0).await;
+            Self::app_async_entrypoint(0).await;
             component.register_config_handler(self.config.clone())?;
         }
 
         for component in self.components.iter_mut() {
-        Self::app_async_entrypoint(1).await;
+            Self::app_async_entrypoint(1).await;
             component.init(tui.size()?)?;
         }
 
@@ -172,14 +207,14 @@ impl App {
             Self::app_async_entrypoint(0).await;
         });
         loop {
-        //no self.task = tokio::spawn(async move {
-        //    Self::app_async_entrypoint(0).await;
-        //});
-        //no Self::app_async_entrypoint(0).await;
-            if let Some(e) = tui.next().await {
             //no self.task = tokio::spawn(async move {
-            //no     Self::app_async_entrypoint(0).await;
-            //no });
+            //    Self::app_async_entrypoint(0).await;
+            //});
+            //no Self::app_async_entrypoint(0).await;
+            if let Some(e) = tui.next().await {
+                //no self.task = tokio::spawn(async move {
+                //no     Self::app_async_entrypoint(0).await;
+                //no });
                 match e {
                     tui::Event::Quit => action_tx.send(Action::Quit)?,
                     tui::Event::Tick => action_tx.send(Action::Tick)?,
@@ -222,21 +257,21 @@ impl App {
 
             while let Ok(event) = req_rx.try_recv() {
                 action_tx.send(Action::ReceiveEvent(event))?;
-                        //
-                        self.task = tokio::spawn(async move {
-                            Self::app_async_entrypoint(0).await;
-                        });
-                        //
+                //
+                self.task = tokio::spawn(async move {
+                    Self::app_async_entrypoint(0).await;
+                });
+                //
             }
 
             while let Ok(action) = action_rx.try_recv() {
                 if action != Action::Tick && action != Action::Render {
                     log::debug!("{action:?}");
-                        //
-                        self.task = tokio::spawn(async move {
-                            Self::app_async_entrypoint(0).await;
-                        });
-                        //
+                    //
+                    self.task = tokio::spawn(async move {
+                        Self::app_async_entrypoint(0).await;
+                    });
+                    //
                 }
                 match action {
                     Action::Tick => {
@@ -324,7 +359,6 @@ impl App {
                         log::info!("Send text note: {event:?}");
                         event_tx.send(event)?;
                         action_tx.send(Action::SystemMessage(format!(" [Posted] {content}")))?;
-
                     }
                     ///
                     ///

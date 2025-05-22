@@ -60,23 +60,17 @@ impl WeebleWobble {
     }
 
     fn weeble(&mut self) -> String {
-        self.weeble_task = tokio::spawn(async move {
-
-        });
+        self.weeble_task = tokio::spawn(async move {});
 
         String::from("0")
     }
     fn blockheight(&mut self) -> String {
-        self.blockheight_task = tokio::spawn(async move {
-
-        });
+        self.blockheight_task = tokio::spawn(async move {});
 
         String::from("0")
     }
     fn wobble(&mut self) -> String {
-        self.wobble_task = tokio::spawn(async move {
-
-        });
+        self.wobble_task = tokio::spawn(async move {});
 
         String::from("0")
     }
@@ -91,9 +85,9 @@ impl WeebleWobble {
             self.app_frames = 0;
         }
         //let _ = tokio::spawn(async move {
-            self.weeble = self.weeble();
-            self.blockheight = self.blockheight();
-            self.wobble = self.wobble();
+        self.weeble = self.weeble();
+        self.blockheight = self.blockheight();
+        self.wobble = self.wobble();
         //});
 
         Ok(())

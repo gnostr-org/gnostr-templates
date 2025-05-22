@@ -64,7 +64,6 @@ const DEFAULT_CONFIG: &str = r#"{
   ]
 }"#;
 
-
 const DEFAULT_USER_CONFIG: &str = r#"{"privatekey": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","relays": ["wss://relay.damus.io", "wss://e.nos.lol"]}"#;
 
 #[derive(Clone, Debug, Deserialize, Default)]

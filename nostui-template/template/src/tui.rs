@@ -107,7 +107,6 @@ impl Tui {
         log::info!("tui_async_entrypoint:{}.", timer);
     }
 
-
     pub fn start(&mut self) {
         //call to non-async self.tick_rate
         let tick_delay = std::time::Duration::from_secs_f64(1.0 / self.tick_rate);
@@ -122,9 +121,7 @@ impl Tui {
             //async
             Self::tui_async_entrypoint(0).await;
             log::info!("124:....");
-            tokio::spawn(async move {
-            Self::tui_async_entrypoint(2).await
-            });
+            tokio::spawn(async move { Self::tui_async_entrypoint(2).await });
             log::info!("128:....");
             let mut reader = crossterm::event::EventStream::new();
             let mut tick_interval = tokio::time::interval(tick_delay);
@@ -179,10 +176,10 @@ impl Tui {
                   _ = render_delay => {
                       _event_tx.send(Event::Render).unwrap();
                   },
-                }//
-            }//
-        });//self.task end
-    }//fn start end
+                } //
+            } //
+        }); //self.task end
+    } //fn start end
 
     pub fn stop(&self) -> Result<()> {
         self.cancel();
