@@ -52,20 +52,20 @@ install-mutlitab-async:
 
 generate-all:
     #git stash #--include-untracked -a
-    just generate-cli
-    just gnostr-component
-    just generate-tui-crb
+    #just generate-cli
+    #just gnostr-component
+    #just generate-tui-crb
     just generate-nostui
-    just generate-component
-    just generate-wasm-pack
+    #just generate-component
+    #just generate-wasm-pack
     just generate-simple
     just generate-simple-async
     just generate-simple-async-tabs
     just generate-term
     just generate-tui-logger
-    just generate-lib
-    just generate-multitab-async
-    just generate-user-input
+    #just generate-lib
+    #just generate-multitab-async
+    #just generate-user-input
     just generate-dumbpipe
     #git stash pop
 
