@@ -1,2 +1,7 @@
 [template]
 cargo_generate_version = ">=0.10.0"
+ignore = [".github/workflows/ci.yml",
+
+"doc/demo_v0.6.6.gif","doc/example.png","doc/example.svg","doc/make_demo_gif.sh*","doc/shell.nix"        
+
+]
